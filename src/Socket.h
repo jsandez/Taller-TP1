@@ -1,7 +1,7 @@
 #ifndef _SOCKET_H_
 #define _SOCKET_H_
 
-typedef struct socket {
+typedef struct Socket {
   int fd;
 } socket_t;
 
