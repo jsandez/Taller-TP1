@@ -1,0 +1,4 @@
+#ifndef _SUDOKUFILE_MANAGER_H_
+#define _SUDOKUFILE_MANAGER_H_
+
+#endif
