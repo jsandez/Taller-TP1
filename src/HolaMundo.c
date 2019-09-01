@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "Board.h"
+#include "SudokuFileManager.h"
 
 typedef struct palabra {
   char palabra[20];
 } palabra_t;
 
 int main(int argc, char *argv[]) {
-  FILE *fsource;
+  /*FILE *fsource;
   palabra_t traductor;
   fsource = fopen("../hola.txt", "r");
   if (fsource == NULL) {
@@ -20,6 +22,9 @@ int main(int argc, char *argv[]) {
     }
   }
   fclose(fsource);
-  printf("termino");
+  printf("termino");*/
+  //board_t board;
+  //printBoard(&board);
+  readFile("board.txt");
   return 0;
 }
