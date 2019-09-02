@@ -1,7 +1,7 @@
 #include "Board.h"
 #include "SudokuFileManager.h"
 
-void board_load(board_t *self, const char *filepath) {
+void board_create(board_t *self, const char *filepath) {
   loadBoardFromFile(self, filepath);
 }
 
@@ -16,3 +16,5 @@ void board_put(board_t *self, const int row, const int column, int value) {
 int board_get(board_t *self, const int row, const int column) {
   return self->cells[row - 1][column - 1].value;
 }
+
+void board_destroy(board_t *self) {}

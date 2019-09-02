@@ -1,4 +1,5 @@
 #include "SudokuView.h"
+#include "stdio.h"
 
 void printBoard(board_t *board) {
   for (int i = 0; i < 9; i++) {
