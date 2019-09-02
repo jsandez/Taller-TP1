@@ -3,22 +3,20 @@
 #include <stdbool.h>
 
 typedef struct {
-  int row;
-  int column;
-} coordinates_t;
-
-typedef struct {
-  coordinates_t coordinates;
+  int value;
   bool preFixed;
 } cell_t;
 
 typedef struct {
-  cell_t cell[9][9];
-  cell_t *iterator;
+  cell_t cells[3][3];
+} sector_t;
+
+typedef struct {
+  cell_t cells[9][9];
 } board_t;
 
-cell_t *get(const board_t *board, int row, int column);
-int put(board_t *board, int row, int column, int value);
-void printBoard(const board_t*);
+void board_load(board_t *self, const char *filepath);
+void board_put(board_t *self, const int row, const int column, const int value);
+int board_get(board_t *self, const int row, const int column);
 
 #endif

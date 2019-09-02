@@ -2,29 +2,26 @@
 #include <string.h>
 #include <stdlib.h>
 #include "Board.h"
-#include "SudokuFileManager.h"
-
-typedef struct palabra {
-  char palabra[20];
-} palabra_t;
+#include "SudokuView.h"
 
 int main(int argc, char *argv[]) {
-  /*FILE *fsource;
-  palabra_t traductor;
-  fsource = fopen("../hola.txt", "r");
-  if (fsource == NULL) {
-    printf("ERROR");
-    exit(1);
-  }
-  while (!feof(fsource)) {
-    if (fread((void *) &traductor, sizeof(traductor), 1, fsource)) {
-      printf("%s", traductor.palabra);
-    }
-  }
-  fclose(fsource);
-  printf("termino");*/
-  //board_t board;
-  //printBoard(&board);
-  readFile("board.txt");
+  board_t board;
+  board_load(&board, "board.txt");
+  printBoard(&board);
+  int value;
+  int row;
+  int column;
+  printf("Introduce un valor: ");
+  scanf("%i", &value);
+  printf("Introduce fila: ");
+  scanf("%i", &row);
+  printf("Introduce columna2: ");
+  scanf("%i", &column);
+  board_put(&board, row, column, value);
+  int valueGet = board_get(&board, 4, 4);
+  printf("\nEl valor es: %i", valueGet);
+  printf("reseteo");
+  board_load(&board, "board.txt");
+  printBoard(&board);
   return 0;
 }

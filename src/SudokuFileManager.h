@@ -1,5 +1,11 @@
 #ifndef _SUDOKUFILE_MANAGER_H_
+#define _SUDOKUFILE_MANAGER_H_
+#include "Board.h"
+#include <stdio.h>
 
-void readFile(const char *fileName);
+void loadBoardFromFile(board_t *board, const char *fName);
+int checkRow(const char *linea);
+int checkFormatFile(FILE *fsource);
+void checkFile(FILE *fsource);
 
 #endif

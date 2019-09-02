@@ -1,14 +1,18 @@
-#include <stdio.h>
 #include "Board.h"
+#include "SudokuFileManager.h"
 
-cell_t *get(const board_t *board, int row, int column) {
-  return board->iterator;
-}
-int put(board_t *board, int row, int column, int value) {
-  return 0;
+void board_load(board_t *self, const char *filepath) {
+  loadBoardFromFile(self, filepath);
 }
 
-void printBoard(const board_t* board) {
-  long num = 1111111111111111111;
-  printf("%ld\n%ld",num,num);
+void board_put(board_t *self, const int row, const int column, int value) {
+  // CHEQUEAR VALORES DE ROW Y COLUMN
+  if (self->cells[row - 1][column - 1].preFixed) {
+    // AVISAR QUE NO SE PUEDE CAMBIAR
+  }
+  self->cells[row - 1][column - 1].value = value;
+}
+
+int board_get(board_t *self, const int row, const int column) {
+  return self->cells[row - 1][column - 1].value;
 }
