@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include "List.h"
 
-void list_create(list_t *self) {
+void list_create(List_t *self) {
   self->head = NULL;
 }
-void list_add(list_t *self, int data) {
+void list_add(List_t *self, int data) {
   struct node *current = self->head;
   struct node *newNode =(struct node *)malloc(sizeof(struct node));
   newNode->data= data;
@@ -19,10 +19,10 @@ void list_add(list_t *self, int data) {
   }
 }
 
-int list_contains(list_t *self, int data) {
+int list_contains(List_t *self, int data) {
   return 0;
 }
-void list_destroy(list_t *self) {
+void list_destroy(List_t *self) {
   struct node *current, *tmp;
   current = self->head;
   while (current) {
@@ -32,7 +32,7 @@ void list_destroy(list_t *self) {
   }
 }
 
-size_t list_size(const list_t *self) {
+size_t list_size(const List_t *self) {
   size_t size = 0;
   struct node *current = self->head;
   while (current) {

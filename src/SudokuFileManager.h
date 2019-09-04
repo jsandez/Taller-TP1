@@ -3,7 +3,7 @@
 #include "Board.h"
 #include <stdio.h>
 
-void loadBoardFromFile(board_t *board, const char *fName);
+void loadBoardFromFile(Board_t *board, const char *fName);
 int checkRow(const char *linea);
 int checkFormatFile(FILE *fsource);
 void checkFile(FILE *fsource);

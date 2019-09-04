@@ -10,7 +10,7 @@
 #include <arpa/inet.h>
 
 int main(int argc, char *argv[]) {
-  /*board_t board;
+  /*Board_t board;
   board_create(&board, "board.txt");
   printBoard(&board);
   int row;
@@ -19,19 +19,19 @@ int main(int argc, char *argv[]) {
   scanf("%i",&row);
   printf("Introduzca columna sector: ");
   scanf("%i",&column);
-  sector_t sector;
+  Sector_t sector;
   sector_create(&sector,&board,row,column);
   print_sector(&sector);
-  list_t list;
+  List_t list;
   list_create(&list);
   list_add(&list, 1);
   list_add(&list, 2);
   size_t size = list_size(&list);
   printf("%ld", size);
   list_destroy(&list);*/
-  socket_t socket;
-  socket_init(&socket);
-  socket_connect(&socket,"localhost","http",7777);
-  socket_release(&socket);
+  Socket_t socket;
+  socket_create(&socket);
+  socket_connect(&socket,"localhost","7777");
+  socket_destroy(&socket);
   return 0;
 }

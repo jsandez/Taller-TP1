@@ -1,5 +1,6 @@
-#ifdef  _SUDOKU_H
-#define _SUDOKU_H
+#ifndef _SUDOKUGAME_H_
+#define _SUDOKUGAME_H_
 
+void sudoku_game_start();
 #endif
 

@@ -3,12 +3,12 @@
 #include "Board.h"
 
 typedef struct {
-  cell_t cells[3][3];
-} sector_t;
+  Cell_t cells[3][3];
+} Sector_t;
 
-void sector_create(sector_t *self, board_t *board,const int sectorRow, const int columnRow);
-int sector_check_values(sector_t *self);
-void sector_destroy(sector_t *self);
-void print_sector(sector_t* self);
+void sector_create(Sector_t *self, Board_t *board, const int sectorRow, const int columnRow);
+int sector_check_values(Sector_t *self);
+void sector_destroy(Sector_t *self);
+void print_sector(Sector_t* self);
 
 #endif

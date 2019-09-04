@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 
-void loadBoardFromFile(board_t *board, const char *fName) {
+void loadBoardFromFile(Board_t *board, const char *fName) {
   FILE *fsource;
   char linea[11];
   fsource = fopen(fName, "r");
@@ -13,7 +13,7 @@ void loadBoardFromFile(board_t *board, const char *fName) {
     for (int i = 0; i < 9; i++) {
       for (int j = 0; j < 9; j++) {
         int value = linea[j] - '0';
-        cell_t cell = {value, false};
+        Cell_t cell = {value, false};
         board->cells[i][j] = cell;
       }
     }

@@ -3,6 +3,6 @@
 #ifndef _SUDOKUVIEW_H_
 #define _SUDOKUVIEW_H_
 
-void printBoard(board_t *board);
+void printBoard(Board_t *board);
 
 #endif
