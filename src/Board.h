@@ -17,3 +17,4 @@ int board_get(Board_t *self, const int row, const int column);
 void board_destroy(Board_t *self);
 
 #endif
+

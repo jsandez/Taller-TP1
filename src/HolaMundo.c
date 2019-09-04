@@ -30,8 +30,9 @@ int main(int argc, char *argv[]) {
   printf("%ld", size);
   list_destroy(&list);*/
   Socket_t socket;
-  socket_create(&socket);
-  socket_connect(&socket,"localhost","7777");
+    socket_create(&socket, NULL);
+  //socket_connect(&socket,"localhost","7777");
   socket_destroy(&socket);
   return 0;
 }
+
