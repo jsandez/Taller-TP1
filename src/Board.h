@@ -14,10 +14,11 @@ struct Board {
   Board_t *board_copy;
 };
 
-void board_create(Board_t *self, const char *filepath);
-void board_put(Board_t *self, const int row, const int column, const int value);
-int board_get(Board_t *self, const int row, const int column);
-void board_destroy(Board_t *self);
+void boardCreate(Board_t *self, const char *filepath);
+int boardPut(Board_t *self, const int row, const int column, const int value);
+int boardGet(Board_t *self, const int row, const int column);
+void boardReset(Board_t *self);
+void boardDestroy(Board_t *self);
 
 #endif
 

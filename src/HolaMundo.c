@@ -4,7 +4,7 @@
 #include "Socket.h"
 
 int main(int argc, char *argv[]) {
-  char mode[20];
+  /*char mode[20];
   int res = 0;
   Socket_t socket;
   socket_create(&socket);
@@ -35,6 +35,18 @@ int main(int argc, char *argv[]) {
     }
   }
   socket_destroy(&socket);
-  return res;
+  return res;*/
+  Board_t board;
+  boardCreate(&board, "board.txt");
+  printBoard(&board);
+  printf("\n");
+  boardPut(&board,2,2,3);
+  printBoard(&board);
+  printf("\n");
+  boardReset(&board);
+  printBoard(&board);
+  printf("\n");
+  boardDestroy(&board);
+
 }
 
