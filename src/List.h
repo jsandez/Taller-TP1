@@ -1,13 +1,15 @@
 #ifndef _LIST_H_
 #define _LIST_H_
 
-typedef struct node {
+struct Node;
+typedef struct Node Node_t;
+struct Node {
   int data;
-  struct node *next;
-} Node_t;
+  Node_t *next;
+};
 
 typedef struct list {
-  struct node *head;
+  Node_t *head;
 } List_t;
 
 void list_create(List_t *self);

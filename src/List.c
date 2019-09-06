@@ -5,8 +5,8 @@ void list_create(List_t *self) {
   self->head = NULL;
 }
 void list_add(List_t *self, int data) {
-  struct node *current = self->head;
-  struct node *newNode =(struct node *)malloc(sizeof(struct node));
+  Node_t *current = self->head;
+  Node_t *newNode =(Node_t *)malloc(sizeof(Node_t));
   newNode->data= data;
   newNode->next=NULL;
   if (current == NULL) {
@@ -23,7 +23,7 @@ int list_contains(List_t *self, int data) {
   return 0;
 }
 void list_destroy(List_t *self) {
-  struct node *current, *tmp;
+  Node_t *current, *tmp;
   current = self->head;
   while (current) {
     tmp = current->next;
@@ -34,7 +34,7 @@ void list_destroy(List_t *self) {
 
 size_t list_size(const List_t *self) {
   size_t size = 0;
-  struct node *current = self->head;
+  Node_t *current = self->head;
   while (current) {
     size++;
     current = current->next;

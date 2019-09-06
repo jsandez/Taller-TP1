@@ -4,22 +4,37 @@
 #include "Socket.h"
 
 int main(int argc, char *argv[]) {
-    char mode[20];
-    memcpy(mode, argv[1], strlen(argv[1]) + 1);
+  char mode[20];
+  int res = 0;
+  Socket_t socket;
+  socket_create(&socket);
+  memcpy(mode, argv[1], strlen(argv[1]) + 1);
+  if (strcmp(mode, "server") == 0) {
+    const char *port = argv[2];
     char buffer[1024] = {0};
-    Socket_t socket;
-    socket_create(&socket);
-    if (strcmp(mode, "server") == 0) {
-        printf("server\n");
-        socket_bind(&socket, "7777");
-        socket_listen(&socket, 20);
-        socket_accept(&socket);
-    }
+    printf("server\n");
+    res = socket_bind(&socket, port);
+    res = socket_listen(&socket, 20);
+    Socket_t accept_socket;
+    res = socket_accept(&socket, &accept_socket);
+    res = socket_receive(&accept_socket, buffer);
+    res = socket_send(&accept_socket, "hola soy el server");
+    socket_destroy(&accept_socket);
+  } else {
     if (strcmp(mode, "client") == 0) {
-        printf("client\n");
-        socket_connect(&socket, "localhost", "7777");
+      char buffer[1024] = {0};
+      const char *host = argv[2];
+      const char *port = argv[3];
+      printf("client\n");
+      res = socket_connect(&socket, host, port);
+      res = socket_send(&socket, "hola soy el cliente");
+      res = socket_receive(&socket, buffer);
+    } else {
+      printf("ERROR DE PARAMETROS");
+      res = 1;
     }
-    socket_destroy(&socket);
-    return 0;
+  }
+  socket_destroy(&socket);
+  return res;
 }
 

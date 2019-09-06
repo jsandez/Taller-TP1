@@ -15,11 +15,11 @@ int socket_bind(Socket_t *self, const char *service);
 
 int socket_listen(Socket_t *self, int waiting);
 
-int socket_accept(Socket_t *self);
+int socket_accept(Socket_t *self,Socket_t *accept_socket);
 
-int socket_send(Socket_t *self, const void *buf, const size_t size);
+int socket_send(Socket_t *self, const void *buf);
 
-int socket_receive(Socket_t *self, const void *buf, const size_t size);
+int socket_receive(Socket_t *self, void *buf);
 
 void socket_destroy(Socket_t *self);
 
