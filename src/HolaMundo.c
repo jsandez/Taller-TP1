@@ -4,7 +4,7 @@
 #include "Socket.h"
 
 int main(int argc, char *argv[]) {
-  /*char mode[20];
+  char mode[20];
   int res = 0;
   Socket_t socket;
   socket_create(&socket);
@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     Socket_t accept_socket;
     res = socket_accept(&socket, &accept_socket);
     res = socket_receive(&accept_socket, buffer);
-    res = socket_send(&accept_socket, "hola soy el server");
+    res = socket_send(&accept_socket, "hola soy el server\ncomo te va\n?");
     socket_destroy(&accept_socket);
   } else {
     if (strcmp(mode, "client") == 0) {
@@ -35,8 +35,8 @@ int main(int argc, char *argv[]) {
     }
   }
   socket_destroy(&socket);
-  return res;*/
-  Board_t board;
+  return res;
+  /*Board_t board;
   boardCreate(&board, "board.txt");
   printBoard(&board);
   printf("\n");
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
   boardReset(&board);
   printBoard(&board);
   printf("\n");
-  boardDestroy(&board);
+  boardDestroy(&board);*/
 
 }
 
