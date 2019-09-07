@@ -93,13 +93,11 @@ const char *sudokuVerify(Sudoku_t *self) {
   return "ERROR\n";
 }
 
-// TO DO: CAMBIAR ESTO
 void sudokuReset(Sudoku_t *self) {
   boardReset(self->board);
-  printBoard(self->board);
 }
-void sudokuGet(Sudoku_t *self) {
-  printBoard(self->board);
+void sudokuGet(Sudoku_t *self,char view[722]) {
+  getBoardView(self->board,view);
 }
 void sudokuExit(Sudoku_t *self) {
   boardDestroy(self->board);

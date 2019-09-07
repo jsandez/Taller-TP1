@@ -1,15 +1,15 @@
 #include "SudokuView.h"
 #include "stdio.h"
 
-void printBoard(Board_t *board) {
-  char view[19][38] = {' '}; // INICIALIZO CON ESPACIO
+void getBoardView(Board_t *board, char view[722]) {
+  char matrixView[19][38] = {' '};
   for (int i = 0; i < 19; i++) { // AGREGO FIN DE LINEA
-    view[i][37] = '\n';
+    matrixView[i][37] = '\n';
   }
   int j = 0; // AGREGO SEPARADORES DE A 12 COLUMNAS
   while (j < 37) {
     for (int i = 0; i < 19; i++) {
-      view[i][j] = 'U';
+      matrixView[i][j] = 'U';
     }
     j += 12;
   }
@@ -17,7 +17,7 @@ void printBoard(Board_t *board) {
   while (i < 19) {
     for (int j = 0; j < 36; j++) {
       if ((j + 12) % 12 != 0) {
-        view[i][j] = '=';
+        matrixView[i][j] = '=';
       }
     }
     i += 6;
@@ -31,9 +31,9 @@ void printBoard(Board_t *board) {
         if ((j_2 % 4 == 0)) {
           Cell_t cell = board->cells[(i_2 / 2) - 1][(j_2 / 4) - 1];
           if (cell.value != 0) {
-            view[i][j] = (char) cell.value + '0';
+            matrixView[i][j] = (char) cell.value + '0';
           } else {
-            view[i][j] = ' ';
+            matrixView[i][j] = ' ';
           }
         }
       }
@@ -42,13 +42,13 @@ void printBoard(Board_t *board) {
   j = 0;
   while (j < 37) { // AGREGO LOS SEPARADORES DE PIPE Y SIMBOLO MAS CADA 4 COLUMNAS
     for (int i = 0; i < 19; i++) {
-      char c = view[i][j];
+      char c = matrixView[i][j];
       if (c == '\000') {
         int i_1 = i + 1;
         if (i_1 % 2 == 0) {
-          view[i][j] = '|';
+          matrixView[i][j] = '|';
         } else {
-          view[i][j] = '+';
+          matrixView[i][j] = '+';
         }
       }
     }
@@ -57,9 +57,9 @@ void printBoard(Board_t *board) {
   i = 0; //AGREGO SEPARADORES DE A  2 FILAS
   while (i < 19) {
     for (int j = 0; j < 36; j++) {
-      char c = view[i][j];
+      char c = matrixView[i][j];
       if (c == '\000') {
-        view[i][j] = '-';
+        matrixView[i][j] = '-';
       }
     }
     i += 2;
@@ -67,9 +67,9 @@ void printBoard(Board_t *board) {
   // AGREGO ESPACIOS CORRESPONDIES
   for (int i = 0; i < 19; i++) {
     for (int j = 0; j < 38; j++) {
-      char c = view[i][j];
+      char c = matrixView[i][j];
       if (c == '\000') {
-        view[i][j] = ' ';
+        matrixView[i][j] = ' ';
       }
     }
   }
@@ -77,7 +77,16 @@ void printBoard(Board_t *board) {
 //REVISAR ULTIMO CARACTER
   for (int i = 0; i < 19; i++) {
     for (int j = 0; j < 38; j++) {
-      printf("%c", view[i][j]);
+      int index = i * 38 + j;
+      char element = matrixView[i][j];
+      if (element == ' ') {
+        view[index] = ' ';
+      } else {
+        view[index] = matrixView[i][j];
+      }
     }
   }
+  char aver = view[719];
+  char aver2 = view[720];
+  char aver3 = view[721];
 };

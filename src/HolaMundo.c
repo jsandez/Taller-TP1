@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "Sudoku.h"
 #include "SudokuView.h"
-#include "Socket.h"
 
 int main(int argc, char *argv[]) {
   /*char buffer[1024];
@@ -44,7 +43,9 @@ int main(int argc, char *argv[]) {
   return res;*/
   Sudoku_t sudoku;
   sudokuStart(&sudoku);
-  sudokuGet(&sudoku);
+  char view[722] = {' '};
+  sudokuGet(&sudoku,view);
+  printf("%s",(const char *) view);
   while (1) {
     char funcion;
     printf("Ingresa la funcion: ");
@@ -60,27 +61,18 @@ int main(int argc, char *argv[]) {
       printf("%s\n",sudokuVerify(&sudoku));
     }
     if (funcion == 'g') {
-      sudokuGet(&sudoku);
+      sudokuGet(&sudoku,view);
+      printf("%s",(const char *) view);
     }
     if (funcion == 'r') {
       sudokuReset(&sudoku);
+      sudokuGet(&sudoku,view);
+      printf("%s",(const char *) view);
     }
     if (funcion == 'x') {
       break;
     }
   }
   sudokuExit(&sudoku);
-  /*Board_t board;
-  boardCreate(&board, "board.txt");
-  printBoard(&board);
-  printf("\n");
-  boardPut(&board,2,2,3);
-  printBoard(&board);
-  printf("\n");
-  boardReset(&board);
-  printBoard(&board);
-  printf("\n");
-  boardDestroy(&board);*/
-
 }
 
