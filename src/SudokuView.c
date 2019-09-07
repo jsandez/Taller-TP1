@@ -86,7 +86,4 @@ void getBoardView(Board_t *board, char view[722]) {
       }
     }
   }
-  char aver = view[719];
-  char aver2 = view[720];
-  char aver3 = view[721];
 };

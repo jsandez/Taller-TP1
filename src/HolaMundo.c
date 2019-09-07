@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
   return res;*/
   Sudoku_t sudoku;
   sudokuStart(&sudoku);
-  char view[723] = {' '};
+  char view[723] = {'0'};
   sudokuGet(&sudoku,view);
   printf("%s",(const char *) view);
   while (1) {
