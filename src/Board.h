@@ -1,9 +1,10 @@
 #ifndef _BOARD_H_
 #define _BOARD_H_
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef struct {
-  int value;
+  uint8_t value;
   bool preFixed;
 } Cell_t;
 
@@ -15,8 +16,7 @@ struct Board {
 };
 
 void boardCreate(Board_t *self, const char *filepath);
-int boardPut(Board_t *self, const int row, const int column, const int value);
-int boardGet(Board_t *self, const int row, const int column);
+int boardPut(Board_t *self, uint8_t value, uint8_t row, uint8_t column);
 void boardReset(Board_t *self);
 void boardDestroy(Board_t *self);
 

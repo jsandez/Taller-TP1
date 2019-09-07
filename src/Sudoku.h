@@ -7,10 +7,10 @@ typedef struct {
 } Sudoku_t;
 
 void sudokuStart(Sudoku_t *self);
-void sudokuPut(Sudoku_t *self, int row, int column, int value);
+const char *sudokuPut(Sudoku_t *self, uint8_t value, uint8_t row, uint8_t column);
 const char *sudokuVerify(Sudoku_t *self);
 void sudokuReset(Sudoku_t *self);
-void sudokuGet(Sudoku_t *self, int row, int column);
+void sudokuGet(Sudoku_t *self);
 void sudokuExit(Sudoku_t *self);
 
 #endif

@@ -25,17 +25,13 @@ void socket_create(Socket_t *self) {
 
 int socket_connect(Socket_t *self, const char *host, const char *service) {
   struct addrinfo *ai_list, *ptr;
-  int res = socket_getaddrinfo(&ai_list, host, service, 0);
-  if (res != 0) {
-    printf("[ERROR] socket_connect: %s\n", gai_strerror(res));
+  if (socket_getaddrinfo(&ai_list, host, service, 0) != 0) {
     return 1;
   }
   bool connected = false;
   for (ptr = ai_list; ptr != NULL && !connected; ptr = ai_list->ai_next) {
     self->fd = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-    res = connect(self->fd, ptr->ai_addr, ptr->ai_addrlen);
-    if (res != 0) {
-      printf("[ERROR] socket_connect: %s\n", strerror(errno));
+    if (connect(self->fd, ptr->ai_addr, ptr->ai_addrlen) == -1) {
       close(self->fd);
       freeaddrinfo(ai_list);
       return 1;
@@ -48,17 +44,13 @@ int socket_connect(Socket_t *self, const char *host, const char *service) {
 
 int socket_bind(Socket_t *self, const char *service) {
   struct addrinfo *ai_list, *ptr;
-  int res = socket_getaddrinfo(&ai_list, NULL, service, 0);
-  if (res != 0) {
-    printf("[ERROR] socket_bind: %s\n", gai_strerror(res));
+  if (socket_getaddrinfo(&ai_list, NULL, service, 0) != 0) {
     return 1;
   }
   bool is_bind = false;
   for (ptr = ai_list; ptr != NULL && !is_bind; ptr = ai_list->ai_next) {
     self->fd = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-    res = bind(self->fd, ptr->ai_addr, ptr->ai_addrlen);
-    if (res != 0) {
-      printf("[ERROR] socket_bind: %s\n", strerror(errno));
+    if (bind(self->fd, ptr->ai_addr, ptr->ai_addrlen) == -1) {
       close(self->fd);
       freeaddrinfo(ai_list);
       return 1;
@@ -69,10 +61,8 @@ int socket_bind(Socket_t *self, const char *service) {
   return 0;
 }
 
-int socket_listen(Socket_t *self, int waiting) {
-  int res = listen(self->fd, waiting);
-  if (res != 0) {
-    printf("[ERROR] socket_listen: %s\n", strerror(errno));
+int socket_listen(Socket_t *self, int waiting_clients) {
+  if (listen(self->fd, waiting_clients) == -1) {
     close(self->fd);
     return 1;
   }
@@ -82,7 +72,6 @@ int socket_listen(Socket_t *self, int waiting) {
 int socket_accept(Socket_t *self, Socket_t *accept_socket) {
   int newFD = accept(self->fd, NULL, NULL);
   if (newFD == -1) {
-    printf("[ERROR] socket_accept: %s\n", strerror(errno));
     close(self->fd);
     return 1;
   }

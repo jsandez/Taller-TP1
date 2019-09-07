@@ -6,9 +6,9 @@ void list_create(List_t *self) {
 }
 void list_add(List_t *self, int data) {
   Node_t *current = self->head;
-  Node_t *newNode =(Node_t *)malloc(sizeof(Node_t));
-  newNode->data= data;
-  newNode->next=NULL;
+  Node_t *newNode = (Node_t *) malloc(sizeof(Node_t));
+  newNode->data = data;
+  newNode->next = NULL;
   if (current == NULL) {
     self->head = newNode;
   } else {
