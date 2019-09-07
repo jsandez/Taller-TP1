@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
   memcpy(mode, argv[1], strlen(argv[1]) + 1);
   if (strcmp(mode, "server") == 0) {
     const char *port = argv[2];
-    char buffer[1024] = {0};
+    char buffer[1024];
     printf("server\n");
     res = socket_bind(&socket, port);
     res = socket_listen(&socket, 20);
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     socket_destroy(&accept_socket);
   } else {
     if (strcmp(mode, "client") == 0) {
-      char buffer[1024] = {0};
+      char buffer[1024];
       const char *host = argv[2];
       const char *port = argv[3];
       printf("client\n");
