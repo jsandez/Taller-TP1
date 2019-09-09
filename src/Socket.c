@@ -1,5 +1,4 @@
 #define _POSIX_C_SOURCE 200112L
-
 #include <stdio.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -9,6 +8,11 @@
 #include <errno.h>
 #include "Socket.h"
 
+/*
+ * Para usar getaddrinfo tanto para el accept como para el connect,
+ * uso una funcion privada en la cual solo cambiare los parametros
+ * de entrada.
+ */
 static int socket_getaddrinfo(struct addrinfo **ai_list, const char *host, const char *service, int flags) {
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
@@ -19,11 +23,11 @@ static int socket_getaddrinfo(struct addrinfo **ai_list, const char *host, const
   return res;
 }
 
-void socket_create(Socket_t *self) {
+void socketCreate(Socket_t *self) {
   self->fd = -1;
 }
 
-int socket_connect(Socket_t *self, const char *host, const char *service) {
+int socketConnect(Socket_t *self, const char *host, const char *service) {
   struct addrinfo *ai_list, *ptr;
   if (socket_getaddrinfo(&ai_list, host, service, 0) != 0) {
     return 1;
@@ -42,7 +46,7 @@ int socket_connect(Socket_t *self, const char *host, const char *service) {
   return 0;
 }
 
-int socket_bind(Socket_t *self, const char *service) {
+int socketBind(Socket_t *self, const char *service) {
   struct addrinfo *ai_list, *ptr;
   if (socket_getaddrinfo(&ai_list, NULL, service, 0) != 0) {
     return 1;
@@ -61,7 +65,7 @@ int socket_bind(Socket_t *self, const char *service) {
   return 0;
 }
 
-int socket_listen(Socket_t *self, int waiting_clients) {
+int socketListen(Socket_t *self, int waiting_clients) {
   if (listen(self->fd, waiting_clients) == -1) {
     close(self->fd);
     return 1;
@@ -69,46 +73,50 @@ int socket_listen(Socket_t *self, int waiting_clients) {
   return 0;
 }
 
-int socket_accept(Socket_t *self, Socket_t *accept_socket) {
+int socketAccept(Socket_t *self, Socket_t *accept_socket) {
   int newFD = accept(self->fd, NULL, NULL);
   if (newFD == -1) {
     close(self->fd);
     return 1;
   }
+  int val = 1;
+  setsockopt(newFD, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
   accept_socket->fd = newFD;
   return 0;
 }
 
-int socket_send(Socket_t *self, const char *buf) {
+int socketSend(Socket_t *self, const char *buf, int length) {
   int bytes_send = 0;
-  bool connected = true;
-  int request_length = strlen(buf);
-  while (bytes_send < request_length && connected) {
-    int valread = send(self->fd, &buf[bytes_send], 1024 - bytes_send, MSG_NOSIGNAL);
+  while (bytes_send < length) {
+    int valread = send(self->fd, &buf[bytes_send], length - bytes_send, MSG_NOSIGNAL);
+    if (valread == -1) {
+      printf("[ERROR] socketSend: %s\n", strerror(errno));
+      shutdown(self->fd, SHUT_RDWR);
+      return 1;
+    }
     if (valread > 0) {
       bytes_send += valread;
     } else {
-      printf("[ERROR] socket_send: %s\n", strerror(errno));
-      close(self->fd);
-      connected = false;
+      break;
     }
   }
   printf("Message sent\n");
   return 0;
 }
 
-int socket_receive(Socket_t *self, char *buf) {
+int socketReceive(Socket_t *self, char *buf, int length) {
   int bytes_recv = 0;
-  bool connected = true;
-  while (bytes_recv < 1024 && connected) {
-    int valrecv = recv(self->fd, &buf[bytes_recv], 1024 - bytes_recv - 1, 0);
+  while (bytes_recv < length) {
+    int valrecv = recv(self->fd, &buf[bytes_recv], length - bytes_recv, 0);
+    if (valrecv == 0) {
+      return 2;
+    }
     if (valrecv == -1) {
-      printf("[ERROR] socket_send: %s\n", strerror(errno));
-      close(self->fd);
-      connected = false;
+      printf("[ERROR] socketSend: %s\n", strerror(errno));
+      shutdown(self->fd, SHUT_RDWR);
+      return 1;
     }
     if (valrecv > 0) {
-      printf("%s\n", buf);
       buf[valrecv] = 0;
       bytes_recv = valrecv;
     } else {
@@ -119,7 +127,8 @@ int socket_receive(Socket_t *self, char *buf) {
   return 0;
 }
 
-void socket_destroy(Socket_t *self) {
+void socketDestroy(Socket_t *self) {
+  close(self->fd);
   close(self->fd);
 }
 
