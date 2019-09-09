@@ -1,5 +1,4 @@
 #define _POSIX_C_SOURCE 200112L
-
 #include <stdio.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -9,6 +8,11 @@
 #include <errno.h>
 #include "Socket.h"
 
+/*
+ * Para usar getaddrinfo tanto para el accept como para el connect,
+ * uso una funcion privada en la cual solo cambiare los parametros
+ * de entrada.
+ */
 static int socket_getaddrinfo(struct addrinfo **ai_list, const char *host, const char *service, int flags) {
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
@@ -83,13 +87,11 @@ int socketAccept(Socket_t *self, Socket_t *accept_socket) {
 
 int socketSend(Socket_t *self, const char *buf, int length) {
   int bytes_send = 0;
-  bool connected = true;
-  while (bytes_send < length && connected) {
+  while (bytes_send < length) {
     int valread = send(self->fd, &buf[bytes_send], length - bytes_send, MSG_NOSIGNAL);
     if (valread == -1) {
       printf("[ERROR] socketSend: %s\n", strerror(errno));
-      close(self->fd);
-      connected = false;
+      shutdown(self->fd, SHUT_RDWR);
       return 1;
     }
     if (valread > 0) {
@@ -104,13 +106,14 @@ int socketSend(Socket_t *self, const char *buf, int length) {
 
 int socketReceive(Socket_t *self, char *buf, int length) {
   int bytes_recv = 0;
-  bool connected = true;
-  while (bytes_recv < length && connected) {
+  while (bytes_recv < length) {
     int valrecv = recv(self->fd, &buf[bytes_recv], length - bytes_recv, 0);
+    if (valrecv == 0) {
+      return 2;
+    }
     if (valrecv == -1) {
       printf("[ERROR] socketSend: %s\n", strerror(errno));
-      close(self->fd);
-      connected = false;
+      shutdown(self->fd, SHUT_RDWR);
       return 1;
     }
     if (valrecv > 0) {
@@ -124,11 +127,8 @@ int socketReceive(Socket_t *self, char *buf, int length) {
   return 0;
 }
 
-int socketShutdown(Socket_t *self) {
-  shutdown(self->fd, SHUT_RDWR);
-}
-
 void socketDestroy(Socket_t *self) {
+  close(self->fd);
   close(self->fd);
 }
 

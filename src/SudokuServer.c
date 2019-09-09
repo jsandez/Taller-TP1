@@ -1,9 +1,13 @@
 #include <stdio.h>
-#include <netinet/in.h>
 #include "SudokuServer.h"
 #include "Socket.h"
-#include "Response.h"
+#include "ServerResponse.h"
 
+/*
+ * Inicia el servidor en un puerto especificado
+ * Devuelve:0 si se inicio correctamente
+ *          1 si el puerto es incorrect, si hay error en el listen o en el accept
+ */
 int sudokuServerStart(SudokuServer_t *self, const char *port) {
   self->socket = (Socket_t *) malloc(sizeof(Socket_t));
   socketCreate(self->socket);
@@ -11,57 +15,47 @@ int sudokuServerStart(SudokuServer_t *self, const char *port) {
     printf("Uso: ./tp server %s\n", port);
     return 1;
   }
-  socketListen(self->socket, 20);
-  //Socket_t accept_socket;
+  if (socketListen(self->socket, 20) == 1) {
+    printf("[ERROR] sudokuServerStart: ERROR EN LISTEN");
+    return 1;
+  }
   self->accept_socket = (Socket_t *) malloc(sizeof(Socket_t));
-  socketAccept(self->socket, self->accept_socket);
-  /*else {
-    res = socketListen(self->socket, 20);
-    //Socket_t accept_socket;
-    self->accept_socket = (Socket_t *) malloc(sizeof(Socket_t));
-    res = socketAccept(self->socket, self->accept_socket);
-    res = socketReceive(self->accept_socket, bufferRecv, 1024);
-    //const char *asd = strcat("Mandaste esto ", bufferRecv);
-    char bufferResponse[727] = {0};
-    evaluateCommand(bufferRecv, bufferResponse);
-    char buffer_size[4];
-    for (int i = 0; i < 4; i++) {
-      buffer_size[i] = bufferResponse[i];
-    }
-    char second_buffer[723];
-    for (int i = 0; i < 723; i++) {
-      second_buffer[i] = bufferResponse[i + 4];
-    }
-    res = socketSend(self->accept_socket, buffer_size, 4);
-    res = socketSend(self->accept_socket, second_buffer, 1024);
-  }*/
+  if (socketAccept(self->socket, self->accept_socket) == 1) {
+    printf("[ERROR] sudokuServerStart: ERROR EN ACCEPT");
+    return 1;
+  }
   return 0;
 }
 
+/*
+ * Ciclo de vida del sudoku del lado del servidor
+ * Devuelve: 0 si se tiene que seguir ejecutando
+ *           1 si hubo algun error
+ *           2 si se cerro el servidor del lado del cliente
+ */
 int sudokuServerAlive(SudokuServer_t *self) {
-  int res = 0;
-  char bufferRecv[5]= {0};
-  res = socketReceive(self->accept_socket, bufferRecv, 5);
-  //const char *asd = strcat("Mandaste esto ", bufferRecv);
-  Response_t response;
-  responseCreate(&response,bufferRecv);
-  /*char *bufferResponse;
-  evaluateCommand(bufferRecv, bufferResponse);
-  char buffer_size[4];
-  for (int i = 0; i < 4; i++) {
-    buffer_size[i] = bufferResponse[i];
+  int res_1 = 0;
+  int res_2 = 0;
+  int res_3 = 0;
+  char bufferRecv[5] = {0};
+  if (socketReceive(self->accept_socket, bufferRecv, 5) == 2) {
+    return 2;
   }
-  //char *second_buffer = malloc(sizeof(char) * 726);
-  for (int i = 0; i < 722; i++) {
-    second_buffer[i] = bufferResponse[i + 4];
-  }*/
-
-  res = socketSend(self->accept_socket, response.size, 4);
-  res = socketSend(self->accept_socket, response.message, 722);
+  Response_t response;
+  responseCreate(&response, bufferRecv);
+  res_2 = socketSend(self->accept_socket, response.size, 4);
+  res_3 = socketSend(self->accept_socket, response.message, response.size_int);
+  if (res_1 == 1 || res_2 == 1 || res_3 == 1) {
+    responseDestroy(&response);
+    return 1;
+  }
   responseDestroy(&response);
-  return res;
+  return 0;
 }
 
+/*
+ * Libera los recursos del servidor
+ */
 void sudokuServerStop(SudokuServer_t *self) {
   socketDestroy(self->accept_socket);
   socketDestroy(self->socket);

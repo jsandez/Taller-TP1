@@ -9,6 +9,6 @@ typedef struct {
 
 int sudokuServerStart(SudokuServer_t *self, const char *port);
 int sudokuServerAlive(SudokuServer_t *self);
-void sudokuServerStop(SudokuServer_t * self);
+void sudokuServerStop(SudokuServer_t *self);
 
 #endif

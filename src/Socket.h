@@ -17,11 +17,9 @@ int socketListen(Socket_t *self, int waiting_clients);
 
 int socketAccept(Socket_t *self, Socket_t *accept_socket);
 
-int socketSend(Socket_t *self, const char *buf,int length);
+int socketSend(Socket_t *self, const char *buf, int length);
 
-int socketReceive(Socket_t *self, char *buf,int length);
-
-int socketShutdown(Socket_t *self);
+int socketReceive(Socket_t *self, char *buf, int length);
 
 void socketDestroy(Socket_t *self);
 
