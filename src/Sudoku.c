@@ -62,7 +62,7 @@ static int checkAllRows(Board_t *board) {
   return 0;
 }
 
-void sudokuStart(Sudoku_t *self) {
+void  sudokuStart(Sudoku_t *self) {
   Board_t *board = (Board_t *) malloc(sizeof(Board_t));
   boardCreate(board, "board.txt");
   self->board = board;

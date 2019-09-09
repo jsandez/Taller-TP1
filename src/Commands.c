@@ -28,7 +28,7 @@ static void evaluatePut(const char *stdIn, char *message) {
   }
 }
 
-void decode(char *stdIn, char *message) {
+int decode(char *stdIn, char *message) {
   evaluatePut(stdIn, message);
   if (!strcmp(stdIn, "verify")) {
     message[0] = 'V';
@@ -42,4 +42,8 @@ void decode(char *stdIn, char *message) {
   if (!strcmp(stdIn, "exit")) {
     message[0] = 'X';
   }
+  if (feof(stdIn)){
+    return 1;
+  }
+  return 0;
 }

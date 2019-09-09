@@ -2,6 +2,14 @@
 #define _RESPONSE_H_
 #include <stdint.h>
 
-void evaluateCommand(const char *command, char *response);
+typedef struct {
+  uint32_t size_int;
+  char* size;
+  char* message;
+} Response_t;
+
+void responseCreate(Response_t *self,char*message);
+void responseDestroy(Response_t * self);
+void evaluateCommand(char *command, char *response);
 
 #endif
