@@ -24,6 +24,8 @@ int sudokuServerStart(SudokuServer_t *self, const char *port) {
     printf("[ERROR] sudokuServerStart: ERROR EN ACCEPT");
     return 1;
   }
+  self->sudoku = (Sudoku_t *) malloc(sizeof(Sudoku_t));
+  sudokuStart(self->sudoku);
   return 0;
 }
 
@@ -42,7 +44,7 @@ int sudokuServerAlive(SudokuServer_t *self) {
     return 2;
   }
   Response_t response;
-  responseCreate(&response, bufferRecv);
+  responseCreate(&response, bufferRecv,self->sudoku);
   res_2 = socketSend(self->accept_socket, response.size, 4);
   res_3 = socketSend(self->accept_socket, response.message, response.size_int);
   if (res_1 == 1 || res_2 == 1 || res_3 == 1) {
@@ -57,8 +59,10 @@ int sudokuServerAlive(SudokuServer_t *self) {
  * Libera los recursos del servidor
  */
 void sudokuServerStop(SudokuServer_t *self) {
+  sudokuExit(self->sudoku);
   socketDestroy(self->accept_socket);
   socketDestroy(self->socket);
+  free(self->sudoku);
   free(self->accept_socket);
   free(self->socket);
 }

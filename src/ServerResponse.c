@@ -1,79 +1,56 @@
 #include <netinet/in.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include "ServerResponse.h"
 
-/*
- * Funcion que setea el tamanio del response, luego setea el mensaje que debe enviarse desde el sudoku
- */
-static void setSize(Response_t *self, char *message) {
-  uint32_t size = 0;
-  if (message[0] == 'G') {
-    size = 722;
-  }
-  if (message[0] == 'P') {
-    // ACA DEBERIA HACER EL PUT PARA DESPUES DEVOLVER EL GRAFICO
-    size = 722;
-  }
-  if (message[0] == 'V') {
-    // ESTA ENTRADA DEPENDE DE LO QUE DEVUELVE EL VERIFY; SI ES 0 ES OK SINO ES ERROR
-    size = 722;
-  }
-  if (message[0] == 'R') {
-    // TIENE QUE RESETEAR EL TABLERO
-    size = 722;
-  }
-  self->size_int = size;
+static void getBoardView(Response_t *self, Sudoku_t *sudoku) {
+  self->message = (char *) malloc(722);
+  sudokuGet(sudoku, self->message);
+  self->size_int = 722;
   uint32_t sizeForChar = htonl(self->size_int);
   memcpy(self->size, &sizeForChar, 4);
 }
 
-/*
- * Funcion que setea el mensaje recibido desde el sudoku, dependiendo de la operacion utilizada
- */
-static void setMessage(Response_t *self, char *message) {
-  int length = ((int) self->size_int) + 1;
-  self->message = (char *) malloc(length);
-  char graph[722] =
-      {'U', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', 'U', '=', '=', '=', '=', '=', '=', '=', '=', '=',
-       '=', '=', 'U', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', 'U', '\n', 'U', ' ', '3', ' ', '|',
-       ' ', ' ', ' ', '|', ' ', '5', ' ', 'U', ' ', ' ', ' ', '|', ' ', ' ', ' ', '|', ' ', '8', ' ', 'U', ' ', ' ',
-       ' ', '|', ' ', '1', ' ', '|', ' ', ' ', ' ', 'U', '\n', 'U', '-', '-', '-', '+', '-', '-', '-', '+', '-',
-       '-', '-', 'U', '-', '-', '-', '+', '-', '-', '-', '+', '-', '-', '-', 'U', '-', '-', '-', '+', '-', '-', '-',
-       '+', '-', '-', '-', 'U', '\n', 'U', ' ', ' ', ' ', '|', ' ', ' ', ' ', '|', ' ', '7', ' ', 'U', ' ', ' ',
-       ' ', '|', ' ', ' ', ' ', '|', ' ', ' ', ' ', 'U', ' ', '5', ' ', '|', ' ', ' ', ' ', '|', ' ', '8', ' ', 'U',
-       '\n', 'U', '-', '-', '-', '+', '-', '-', '-', '+', '-', '-', '-', 'U', '-', '-', '-', '+', '-', '-', '-',
-       '+', '-', '-', '-', 'U', '-', '-', '-', '+', '-', '-', '-', '+', '-', '-', '-', 'U', '\n', 'U', ' ', '1',
-       ' ', '|', ' ', '2', ' ', '|', ' ', ' ', ' ', 'U', ' ', '7', ' ', '|', ' ', '5', ' ', '|', ' ', ' ', ' ', 'U',
-       ' ', ' ', ' ', '|', ' ', '9', ' ', '|', ' ', ' ', ' ', 'U', '\n', 'U', '=', '=', '=', '=', '=', '=', '=',
-       '=', '=', '=', '=', 'U', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', 'U', '=', '=', '=', '=', '=',
-       '=', '=', '=', '=', '=', '=', 'U', '\n', 'U', ' ', ' ', ' ', '|', ' ', ' ', ' ', '|', ' ', '9', ' ', 'U',
-       ' ', ' ', ' ', '|', ' ', '7', ' ', '|', ' ', ' ', ' ', 'U', ' ', ' ', ' ', '|', ' ', ' ', ' ', '|', ' ', '4',
-       ' ', 'U', '\n', 'U', '-', '-', '-', '+', '-', '-', '-', '+', '-', '-', '-', 'U', '-', '-', '-', '+', '-',
-       '-', '-', '+', '-', '-', '-', 'U', '-', '-', '-', '+', '-', '-', '-', '+', '-', '-', '-', 'U', '\n', 'U',
-       ' ', ' ', ' ', '|', ' ', ' ', ' ', '|', ' ', '4', ' ', 'U', ' ', '3', ' ', '|', ' ', ' ', ' ', '|', ' ', '5',
-       ' ', 'U', ' ', '9', ' ', '|', ' ', ' ', ' ', '|', ' ', ' ', ' ', 'U', '\n', 'U', '-', '-', '-', '+', '-',
-       '-', '-', '+', '-', '-', '-', 'U', '-', '-', '-', '+', '-', '-', '-', '+', '-', '-', '-', 'U', '-', '-', '-',
-       '+', '-', '-', '-', '+', '-', '-', '-', 'U', '\n', 'U', ' ', '7', ' ', '|', ' ', ' ', ' ', '|', ' ', ' ',
-       ' ', 'U', ' ', ' ', ' ', '|', ' ', '9', ' ', '|', ' ', ' ', ' ', 'U', ' ', '8', ' ', '|', ' ', ' ', ' ', '|',
-       ' ', ' ', ' ', 'U', '\n', 'U', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', 'U', '=', '=', '=',
-       '=', '=', '=', '=', '=', '=', '=', '=', 'U', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', 'U',
-       '\n', 'U', ' ', ' ', ' ', '|', ' ', '3', ' ', '|', ' ', ' ', ' ', 'U', ' ', ' ', ' ', '|', ' ', '4', ' ',
-       '|', ' ', '6', ' ', 'U', ' ', ' ', ' ', '|', ' ', '5', ' ', '|', ' ', '7', ' ', 'U', '\n', 'U', '-', '-',
-       '-', '+', '-', '-', '-', '+', '-', '-', '-', 'U', '-', '-', '-', '+', '-', '-', '-', '+', '-', '-', '-', 'U',
-       '-', '-', '-', '+', '-', '-', '-', '+', '-', '-', '-', 'U', '\n', 'U', ' ', '4', ' ', '|', ' ', ' ', ' ',
-       '|', ' ', '6', ' ', 'U', ' ', ' ', ' ', '|', ' ', ' ', ' ', '|', ' ', ' ', ' ', 'U', ' ', '1', ' ', '|', ' ',
-       ' ', ' ', '|', ' ', ' ', ' ', 'U', '\n', 'U', '-', '-', '-', '+', '-', '-', '-', '+', '-', '-', '-', 'U',
-       '-', '-', '-', '+', '-', '-', '-', '+', '-', '-', '-', 'U', '-', '-', '-', '+', '-', '-', '-', '+', '-', '-',
-       '-', 'U', '\n', 'U', ' ', ' ', ' ', '|', ' ', '7', ' ', '|', ' ', ' ', ' ', 'U', ' ', '5', ' ', '|', ' ',
-       ' ', ' ', '|', ' ', ' ', ' ', 'U', ' ', '6', ' ', '|', ' ', ' ', ' ', '|', ' ', '9', ' ', 'U', '\n', 'U',
-       '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', 'U', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=',
-       '=', 'U', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', 'U', '\n'};
-  for (int i = 0; i < length - 1; i++) {
-    self->message[i] = graph[i];
+static void getSudokuMessage(Response_t *self, const char *message) {
+  size_t length = strlen(message);
+  self->message = (char *) malloc(sizeof(char) * length);
+  self->size_int = length;
+  uint32_t sizeForChar = htonl(self->size_int);
+  memcpy(self->size, &sizeForChar, 4);
+  memcpy(self->message, message, length);
+}
+
+static void evaluatePutParameters(Response_t *self, char *message, Sudoku_t *sudoku) {
+  uint8_t row = message[1] - '0';
+  uint8_t column = message[2] - '0';
+  uint8_t value = message[3] - '0';
+  const char *messagePut = sudokuPut(sudoku, (int) value, (int) row, (int) column);
+  if (strcmp(messagePut, "OK\n") == 0) {
+    getBoardView(self, sudoku);
+  } else {
+    getSudokuMessage(self, messagePut);
   }
-  self->message[length-1] = '\0';
+}
+
+/*
+ * Funcion que setea el tamanio del response, luego setea el mensaje que debe enviarse desde el sudoku
+ */
+static void setParameters(Response_t *self, char *message, Sudoku_t *sudoku) {
+  if (message[0] == 'G') {
+    getBoardView(self, sudoku);
+  }
+  if (message[0] == 'P') {
+    evaluatePutParameters(self, message, sudoku);
+  }
+  if (message[0] == 'V') {
+    const char *messageVerify = sudokuVerify(sudoku);
+    getSudokuMessage(self, messageVerify);
+
+  }
+  if (message[0] == 'R') {
+    sudokuReset(sudoku);
+    getBoardView(self, sudoku);
+  }
 }
 
 /*
@@ -81,10 +58,9 @@ static void setMessage(Response_t *self, char *message) {
  *  - Tamanio del mensaje en un char de 5 bytes
  *  - Mensaje en un char del tamanio especificado por el campo size_int
  */
-void responseCreate(Response_t *self, char *message) {
-  self->size = (char *) malloc(sizeof(char)*4);
-  setSize(self, message);
-  setMessage(self, message);
+void responseCreate(Response_t *self, char *message, Sudoku_t *sudoku) {
+  self->size = (char *) malloc(sizeof(char) * 4);
+  setParameters(self, message, sudoku);
 }
 
 /*

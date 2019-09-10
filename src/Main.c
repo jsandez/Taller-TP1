@@ -1,11 +1,6 @@
 #include <string.h>
 #include <stdio.h>
-#include <netinet/in.h>
-#include "Sudoku.h"
 #include "SudokuView.h"
-#include "Socket.h"
-#include "ClientCommands.h"
-#include "ServerResponse.h"
 #include "SudokuServer.h"
 #include "SudokuClient.h"
 
