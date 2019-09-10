@@ -8,3 +8,5 @@ Makefile
 Taller_TP1*
 cmake_install*
 CMake*
+*.py
+filter_options
