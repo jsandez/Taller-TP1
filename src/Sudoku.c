@@ -6,8 +6,6 @@
 static int checkDuplicatesInArray(uint8_t array[]) {
   for (int i = 0; i < 8; i++) {
     for (int j = i + 1; j < 9; j++) {
-      uint8_t aver = array[i];
-      uint8_t aver2 = array[j];
       if ((array[i] == array[j]) && (array[i] != 0)) {
         return -1;
       }
@@ -36,6 +34,7 @@ static int checkAllSectors(Board_t *board) {
         return -1;
     }
   }
+  return 0;
 }
 
 static int checkAllColumns(Board_t *board) {
@@ -75,7 +74,6 @@ const char *sudokuPut(Sudoku_t *self,
                       uint8_t value,
                       uint8_t row,
                       uint8_t column) {
-  bool aver = (row > 9);
   if (row < 1 || row > 9 || column < 1 || column > 9) {
     return "Error en los índices. Rango soportado: [1,9]\n";
   }

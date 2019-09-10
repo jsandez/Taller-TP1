@@ -12,8 +12,8 @@
  *          El valor que devuelve decode
  */
 static int getInput(char command[5]) {
-  printf("Ingresar comando: \n");
-  char message[20] = {0}, c, i = 0;
+  char message[20] = {0}, c;
+  int i = 0;
   while ((c = fgetc(stdin)) != '\n') {
     if (c == EOF)
       return 1;
@@ -36,7 +36,6 @@ static int getCommandLoop(char *command) {
       return 1;
     }
     if (command_result == 2) {
-      printf("Incorrect command.\n");
       command_result = getInput(command);
     }
   }
@@ -57,10 +56,6 @@ static uint32_t readSize(Socket_t *socket) {
   res = socketReceive(socket, buffer_msg_size, 4);
   if (res == 2) {
     return res;
-  }
-  char size[4] = {0};
-  for (int i = 0; i < 4; i++) {
-    size[i] = buffer_msg_size[i];
   }
   memcpy(&size_of_message, buffer_msg_size, sizeof(uint32_t));
   return size_of_message;

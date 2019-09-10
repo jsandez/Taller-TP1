@@ -1,38 +1,30 @@
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 #include "ClientCommands.h"
 
-static void getSubstringMsg(const char *stdIn,
-                            char *sub_str,
-                            int position,
-                            int length) {
-  int c = 0;
-  while (c < length) {
-    sub_str[c] = stdIn[position + c - 1];
-    c++;
-  }
-  sub_str[c] = '\0';
-}
-
 static int evaluatePut(const char *stdIn, char *message) {
-  char substring_1[5], substring_2[5], substring_3[2];
-  getSubstringMsg(stdIn, substring_1, 1, 4);
-  getSubstringMsg(stdIn, substring_2, 6, 4);
-  getSubstringMsg(stdIn, substring_3, 11, 1);
-  if ((!strcmp(substring_1, "put "))
-      && (!strcmp(substring_2, " in "))
-      && (!strcmp(substring_3, ","))) {
-    char value, row, column;
-    getSubstringMsg(stdIn, &value, 5, 1);
-    getSubstringMsg(stdIn, &row, 10, 1);
-    getSubstringMsg(stdIn, &column, 12, 1);
+  int row;
+  int column;
+  int value;
+  int res = sscanf(stdIn, "put %i in %i,%i", &value, &row, &column);
+  if (res != 3) {
+    return 1;
+  } else {
+    if (row < 1 || column > 9 || column < 1 || column > 9) {
+      fprintf(stderr, "Error en los índices. Rango soportado: [1,9]\n");
+      return 2;
+    }
+    if (value < 1 || value > 9) {
+      fprintf(stderr, "Error en el valor ingresado. Rango soportado: [1,9]\n");
+      return 2;
+    }
     message[0] = 'P';
-    message[1] = (uint8_t) row;
-    message[2] = (uint8_t) column;
-    message[3] = (uint8_t) value;
+    message[1] = row+'0';
+    message[2] = column+'0';
+    message[3] = value+'0';
     return 0;
   }
-  return 1;
 }
 
 /*
@@ -43,8 +35,11 @@ static int evaluatePut(const char *stdIn, char *message) {
  *           2 si es incorrecto
  */
 int decode(char *stdIn, char *message) {
-  if (!evaluatePut(stdIn, message))
-    return 0;
+  int resultPut = 0;
+  resultPut = evaluatePut(stdIn, message);
+  if (resultPut != 1) {
+    return resultPut;
+  }
   if (!strcmp(stdIn, "verify")) {
     message[0] = 'V';
     return 0;
