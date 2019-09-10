@@ -28,11 +28,11 @@ static int evaluatePut(const char *stdIn, char *message) {
 }
 
 /*
- * Comandos que se van a leer desde stdIn. Si es incorrecto, vuelve a preguntar hasta que se ingrese
- * uno correcto.
+ * Comandos que se van a leer desde stdIn.
  * Devuelve: 0 si el comando es correcto
  *           1 si quiere salir del juego
- *           2 si es incorrecto
+ *           2 si es incorrecto. Se deja el stdIn abierto para
+ *           que ingrese otro
  */
 int decode(char *stdIn, char *message) {
   int resultPut = 0;

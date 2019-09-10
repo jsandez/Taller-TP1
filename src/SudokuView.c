@@ -78,7 +78,7 @@ static void addSeparators(char matrixView[19][38]) {
 }
 
 void getBoardView(Board_t *board, char view[722]) {
-  char matrixView[19][38] = {{' '},{' '}};
+  char matrixView[19][38] = {{' '},' '};
   for (int i = 0; i < 19; i++) {
     matrixView[i][37] = '\n';
   }
