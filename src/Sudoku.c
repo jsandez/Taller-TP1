@@ -71,7 +71,10 @@ void sudokuStart(Sudoku_t *self) {
   self->board = board;
 }
 
-const char *sudokuPut(Sudoku_t *self, uint8_t value, uint8_t row, uint8_t column) {
+const char *sudokuPut(Sudoku_t *self,
+                      uint8_t value,
+                      uint8_t row,
+                      uint8_t column) {
   bool aver = (row > 9);
   if (row < 1 || row > 9 || column < 1 || column > 9) {
     return "Error en los índices. Rango soportado: [1,9]\n";

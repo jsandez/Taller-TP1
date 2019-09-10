@@ -1,8 +1,7 @@
 #include "SudokuView.h"
-#include "stdio.h"
 
 static void addSpacesAndSeparators(char matrixView[19][38]) {
-  int i = 0; //AGREGO SEPARADORES DE A  2 FILAS
+  int i = 0;
   while (i < 19) {
     for (int j = 0; j < 36; j++) {
       char c = matrixView[i][j];
@@ -12,7 +11,6 @@ static void addSpacesAndSeparators(char matrixView[19][38]) {
     }
     i += 2;
   }
-  // AGREGO ESPACIOS CORRESPONDIENTES
   for (int i = 0; i < 19; i++) {
     for (int j = 0; j < 38; j++) {
       char c = matrixView[i][j];
@@ -25,7 +23,7 @@ static void addSpacesAndSeparators(char matrixView[19][38]) {
 
 static void addPipesAndPlus(char matrixView[19][38]) {
   int j = 0;
-  while (j < 37) { // AGREGO LOS SEPARADORES DE PIPE Y SIMBOLO MAS CADA 4 COLUMNAS
+  while (j < 37) {
     for (int i = 0; i < 19; i++) {
       char c = matrixView[i][j];
       if (c == '\000') {
@@ -61,14 +59,14 @@ static void addSudokuValues(Board_t *board, char matrixView[19][38]) {
 }
 
 static void addSeparators(char matrixView[19][38]) {
-  int j = 0; // AGREGO SEPARADORES DE A 12 COLUMNAS
+  int j = 0;
   while (j < 37) {
     for (int i = 0; i < 19; i++) {
       matrixView[i][j] = 'U';
     }
     j += 12;
   }
-  int i = 0; //AGREGO SEPARADORES DE A  6 FILAS
+  int i = 0;
   while (i < 19) {
     for (int j = 0; j < 36; j++) {
       if ((j + 12) % 12 != 0) {
@@ -78,9 +76,10 @@ static void addSeparators(char matrixView[19][38]) {
     i += 6;
   }
 }
+
 void getBoardView(Board_t *board, char view[722]) {
   char matrixView[19][38] = {' '};
-  for (int i = 0; i < 19; i++) { // AGREGO FIN DE LINEA
+  for (int i = 0; i < 19; i++) {
     matrixView[i][37] = '\n';
   }
   addSeparators(matrixView);

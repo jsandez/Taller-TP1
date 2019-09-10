@@ -1,26 +1,31 @@
-#include <stdint-gcc.h>
+#include <stdint.h>
+#include <string.h>
 #include "ClientCommands.h"
-#include "string.h"
 
-static void getSubstring(const char *string, char *substring, int position, int length) {
+static void getSubstringMsg(const char *stdIn,
+                            char *sub_str,
+                            int position,
+                            int length) {
   int c = 0;
   while (c < length) {
-    substring[c] = string[position + c - 1];
+    sub_str[c] = stdIn[position + c - 1];
     c++;
   }
-  substring[c] = '\0';
+  sub_str[c] = '\0';
 }
 
 static int evaluatePut(const char *stdIn, char *message) {
   char substring_1[5], substring_2[5], substring_3[2];
-  getSubstring(stdIn, substring_1, 1, 4);
-  getSubstring(stdIn, substring_2, 6, 4);
-  getSubstring(stdIn, substring_3, 11, 1);
-  if ((!strcmp(substring_1, "put ")) && (!strcmp(substring_2, " in ")) && (!strcmp(substring_3, ","))) {
+  getSubstringMsg(stdIn, substring_1, 1, 4);
+  getSubstringMsg(stdIn, substring_2, 6, 4);
+  getSubstringMsg(stdIn, substring_3, 11, 1);
+  if ((!strcmp(substring_1, "put "))
+      && (!strcmp(substring_2, " in "))
+      && (!strcmp(substring_3, ","))) {
     char value, row, column;
-    getSubstring(stdIn, &value, 5, 1);
-    getSubstring(stdIn, &row, 10, 1);
-    getSubstring(stdIn, &column, 12, 1);
+    getSubstringMsg(stdIn, &value, 5, 1);
+    getSubstringMsg(stdIn, &row, 10, 1);
+    getSubstringMsg(stdIn, &column, 12, 1);
     message[0] = 'P';
     message[1] = (uint8_t) row;
     message[2] = (uint8_t) column;

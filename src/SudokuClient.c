@@ -71,7 +71,9 @@ static uint32_t readSize(Socket_t *socket) {
  * Return: 0 si se conecto bien
  *         1 si no pudo conectarse
  */
-int sudokuClientStart(SudokuClient_t *self, const char *host, const char *port) {
+int sudokuClientStart(SudokuClient_t *self,
+                      const char *host,
+                      const char *port) {
   self->socket = (Socket_t *) malloc(sizeof(Socket_t));
   socketCreate(self->socket);
   if (socketConnect(self->socket, host, port) == 1) {
@@ -103,12 +105,14 @@ int sudokuClientPlay(SudokuClient_t *self) {
     return size_of_message;
   }
   uint32_t msg_size = ntohl(size_of_message);
-  char buffer_msg[msg_size];
+  char *buffer_msg = malloc(sizeof(char) * (msg_size + 1));
   res = socketReceive(self->socket, buffer_msg, msg_size);
   if (res != 0) {
+    free(buffer_msg);
     return res;
   }
   printf("%s", buffer_msg);
+  free(buffer_msg);
   return 0;
 }
 

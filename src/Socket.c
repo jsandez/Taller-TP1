@@ -13,7 +13,10 @@
  * uso una funcion privada en la cual solo cambiare los parametros
  * de entrada.
  */
-static int socket_getaddrinfo(struct addrinfo **ai_list, const char *host, const char *service, int flags) {
+static int socket_getaddrinfo(struct addrinfo **ai_list,
+                              const char *host,
+                              const char *service,
+                              int flags) {
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_family = AF_INET;
@@ -88,7 +91,10 @@ int socketAccept(Socket_t *self, Socket_t *accept_socket) {
 int socketSend(Socket_t *self, const char *buf, int length) {
   int bytes_send = 0;
   while (bytes_send < length) {
-    int valread = send(self->fd, &buf[bytes_send], length - bytes_send, MSG_NOSIGNAL);
+    int valread = send(self->fd,
+                       &buf[bytes_send],
+                       length - bytes_send,
+                       MSG_NOSIGNAL);
     if (valread == -1) {
       printf("[ERROR] socketSend: %s\n", strerror(errno));
       shutdown(self->fd, SHUT_RDWR);
@@ -100,14 +106,16 @@ int socketSend(Socket_t *self, const char *buf, int length) {
       break;
     }
   }
-  printf("Message sent\n");
   return 0;
 }
 
 int socketReceive(Socket_t *self, char *buf, int length) {
   int bytes_recv = 0;
   while (bytes_recv < length) {
-    int valrecv = recv(self->fd, &buf[bytes_recv], length - bytes_recv, 0);
+    int valrecv = recv(self->fd,
+                       &buf[bytes_recv],
+                       length - bytes_recv,
+                       0);
     if (valrecv == 0) {
       return 2;
     }
@@ -123,7 +131,6 @@ int socketReceive(Socket_t *self, char *buf, int length) {
       break;
     }
   }
-  printf("Message receive\n");
   return 0;
 }
 

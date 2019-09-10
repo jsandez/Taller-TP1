@@ -39,7 +39,8 @@ int main(int argc, char *argv[]) {
       const char *port = argv[3];
       res = clientLoop(host, port);
     } else {
-      printf("Modo no soportado, el primer parámetro debe ser server o client\n");
+      printf("Modo no soportado, "
+             "el primer parámetro debe ser server o client\n");
       return 1;
     }
   }

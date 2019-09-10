@@ -20,11 +20,16 @@ static void getSudokuMessage(Response_t *self, const char *message) {
   memcpy(self->message, message, length);
 }
 
-static void evaluatePutParameters(Response_t *self, char *message, Sudoku_t *sudoku) {
+static void evaluatePutParameters(Response_t *self,
+                                  char *message,
+                                  Sudoku_t *sudoku) {
   uint8_t row = message[1] - '0';
   uint8_t column = message[2] - '0';
   uint8_t value = message[3] - '0';
-  const char *messagePut = sudokuPut(sudoku, (int) value, (int) row, (int) column);
+  const char *messagePut = sudokuPut(sudoku,
+                                     (int) value,
+                                     (int) row,
+                                     (int) column);
   if (strcmp(messagePut, "OK\n") == 0) {
     getBoardView(self, sudoku);
   } else {
@@ -45,7 +50,6 @@ static void setParameters(Response_t *self, char *message, Sudoku_t *sudoku) {
   if (message[0] == 'V') {
     const char *messageVerify = sudokuVerify(sudoku);
     getSudokuMessage(self, messageVerify);
-
   }
   if (message[0] == 'R') {
     sudokuReset(sudoku);
