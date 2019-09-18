@@ -1,14 +1,11 @@
-#include <stdlib.h>
 #include "Sudoku.h"
 #include "SudokuView.h"
 #include "Sector.h"
 
 static int checkDuplicatesInArray(uint8_t array[]) {
   for (int i = 0; i < 8; i++) {
-    for (int j = i + 1; j < 9; j++) {
-      if ((array[i] == array[j]) && (array[i] != 0)) {
-        return -1;
-      }
+    if ((array[i] != 0) && (array[i] == array[i + 1])) {
+      return -1;
     }
   }
   return 0;
@@ -65,9 +62,7 @@ static int checkAllRows(Board_t *board) {
  * Constructor del sudoku con el archivo board.txt
  */
 void sudokuStart(Sudoku_t *self) {
-  Board_t *board = (Board_t *) malloc(sizeof(Board_t));
-  boardCreate(board, "board.txt");
-  self->board = board;
+  boardCreate(&self->board, "board.txt");
 }
 
 const char *sudokuPut(Sudoku_t *self,
@@ -80,16 +75,16 @@ const char *sudokuPut(Sudoku_t *self,
   if (value < 1 || value > 9) {
     return "Error en el valor ingresado. Rango soportado: [1,9]\n";
   }
-  if (boardPut(self->board, value, row, column) == -1) {
+  if (boardPut(&self->board, value, row, column) == -1) {
     return "La celda indicada no es modificable\n";
   }
   return "OK\n";
 }
 
 const char *sudokuVerify(Sudoku_t *self) {
-  if (checkAllSectors(self->board) == 0) {
-    if (checkAllRows(self->board) == 0) {
-      if (checkAllColumns(self->board) == 0) {
+  if (checkAllSectors(&self->board) == 0) {
+    if (checkAllRows(&self->board) == 0) {
+      if (checkAllColumns(&self->board) == 0) {
         return "OK\n";
       }
     }
@@ -98,12 +93,11 @@ const char *sudokuVerify(Sudoku_t *self) {
 }
 
 void sudokuReset(Sudoku_t *self) {
-  boardReset(self->board);
+  boardReset(&self->board);
 }
 void sudokuGet(Sudoku_t *self, char view[722]) {
-  getBoardView(self->board, view);
+  getBoardView(&self->board, view);
 }
 void sudokuExit(Sudoku_t *self) {
-  boardDestroy(self->board);
-  free(self->board);
+  boardDestroy(&self->board);
 }

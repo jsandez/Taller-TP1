@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "ClientCommands.h"
-
+/*
 static int evaluatePut(const char *stdIn, char *message) {
   int row;
   int column;
@@ -25,7 +25,7 @@ static int evaluatePut(const char *stdIn, char *message) {
     message[3] = value+'0';
     return 0;
   }
-}
+}*/
 
 /*
  * Comandos que se van a leer desde stdIn.
@@ -34,27 +34,29 @@ static int evaluatePut(const char *stdIn, char *message) {
  *           2 si es incorrecto. Se deja el stdIn abierto para
  *           que ingrese otro
  */
+/*
 int decode(char *stdIn, char *message) {
   int resultPut = 0;
   resultPut = evaluatePut(stdIn, message);
   if (resultPut != 1) {
     return resultPut;
   }
-  if (!strcmp(stdIn, "verify")) {
+  if (!strncmp(stdIn, "verify",6)) {
     message[0] = 'V';
     return 0;
   }
-  if (!strcmp(stdIn, "reset")) {
+  if (!strncmp(stdIn, "reset",5)) {
     message[0] = 'R';
     return 0;
   }
-  if (!strcmp(stdIn, "get")) {
+  if (!strncmp(stdIn, "get",3)) {
     message[0] = 'G';
     return 0;
   }
-  if (!strcmp(stdIn, "exit")) {
+  if (!strncmp(stdIn, "exit",4)) {
     message[0] = 'X';
     return 1;
   }
   return 2;
 }
+*/

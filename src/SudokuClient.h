@@ -3,7 +3,7 @@
 #include "Socket.h"
 
 typedef struct {
-  Socket_t *socket;
+  Socket_t socket;
 } SudokuClient_t;
 
 int sudokuClientStart(SudokuClient_t *self, const char *host, const char *port);

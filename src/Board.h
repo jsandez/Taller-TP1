@@ -8,12 +8,9 @@ typedef struct {
   bool preFixed;
 } Cell_t;
 
-struct Board;
-typedef struct Board Board_t;
-struct Board {
+typedef struct Board {
   Cell_t cells[9][9];
-  Board_t *board_copy;
-};
+}Board_t;
 
 void boardCreate(Board_t *self, const char *filepath);
 int boardPut(Board_t *self, uint8_t value, uint8_t row, uint8_t column);

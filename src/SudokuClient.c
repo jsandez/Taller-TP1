@@ -4,39 +4,88 @@
 #include <netinet/in.h>
 #include "SudokuClient.h"
 #include "Socket.h"
-#include "ClientCommands.h"
+
+static int __evaluatePut(SudokuClient_t *self, const char *stdIn) {
+  int row,column,value;
+  int res = sscanf(stdIn, "put %i in %i,%i", &value, &row, &column);
+  if (res != 3) {
+    return 1;
+  } else {
+    if (row < 1 || row > 9 || column < 1 || column > 9) {
+      fprintf(stderr, "Error en los índices. Rango soportado: [1,9]\n");
+      return 2;
+    }
+    if (value < 1 || value > 9) {
+      fprintf(stderr, "Error en el valor ingresado. Rango soportado: [1,9]\n");
+      return 2;
+    }
+    res = socketSend(&self->socket, "P", 1);
+    if (res != 0) {
+      return res;
+    }
+    char params[] = {(char) row + '0', (char) column + '0', (char) value + '0'};
+    res = socketSend(&self->socket, params, 3);
+    return res;
+  }
+}
+
+/*
+ * Funcion que decodifica lo que se va a leer desde stdIn.
+ * Devuelve: 0 si el comando es correcto
+ *           1 si quiere salir del juego
+ *           2 si es incorrecto. Se deja el stdIn abierto para
+ *           que ingrese otro
+ */
+static int __decode(SudokuClient_t *self, char *stdIn) {
+  int result = 0;
+  result = __evaluatePut(self, stdIn);
+  if (result != 1) {
+    return result;
+  }
+  if (!strncmp(stdIn, "verify", 6)) {
+    result = socketSend(&self->socket, "V", 1);
+    return result;
+  }
+  if (!strncmp(stdIn, "reset", 5)) {
+    result = socketSend(&self->socket, "R", 1);
+    return result;
+  }
+  if (!strncmp(stdIn, "get", 3)) {
+    result = socketSend(&self->socket, "G", 1);
+    return result;
+  }
+  if (!strncmp(stdIn, "exit", 4)) {
+    return 1;
+  }
+  return 2;
+}
 
 /*
  * Funcion que lee caracteres desde stdin y los codifica.
  * Return:  1 si se tiene que cerrar el juego correctamente
  *          El valor que devuelve decode
  */
-static int getInput(char command[5]) {
-  char message[20] = {0}, c;
-  int i = 0;
-  while ((c = fgetc(stdin)) != '\n') {
-    if (c == EOF)
+static int __getInput(SudokuClient_t *self) {
+  char message[20] = {0};
+  if (fgets(message, 20, stdin) == NULL) {
       return 1;
-    message[i] = c;
-    i++;
   }
-  message[i] = '\0';
-  return decode(message, command);
+  return __decode(self, message);
 }
 
 /*
  * Loop que verifica los comandos que ingresa el cliente.
  * Status: 0: comando correcto
- *         1: se cerro el juego con exit o EOF
+ *         1: se cerro el juego con exit, EOF, o nos cerraron la conexion
  */
-static int getCommandLoop(char *command) {
-  int command_result = getInput(command);
+static int __sendCommandLoop(SudokuClient_t *self) {
+  int command_result = __getInput(self);
   while (command_result != 0) {
     if (command_result == 1) {
       return 1;
     }
     if (command_result == 2) {
-      command_result = getInput(command);
+      command_result = __getInput(self);
     }
   }
   return 0;
@@ -46,19 +95,18 @@ static int getCommandLoop(char *command) {
  * Funcion que devuelve el tamanio del buffer que recibe el socket.
  * Es la primer llamada a recv para determinar el tamanio de nuestro
  * segundo mensaje a leer.
- * Return: Lo que devuelva recv si no es 0
- *         Tamanio del buffer que se debe leer en la proxima llamada
+ * Return: 0 si no hubo problemas
+ *         Lo que devuelva socketReceive si surgio algo
  */
-static uint32_t readSize(Socket_t *socket) {
-  int res = 0;
+static int __readSize(Socket_t *socket, uint32_t *size_of_message) {
   char buffer_msg_size[4] = {0};
-  uint32_t size_of_message = 0;
-  res = socketReceive(socket, buffer_msg_size, 4);
+  int res = socketReceive(socket, buffer_msg_size, 4);
   if (res == 2) {
     return res;
   }
-  memcpy(&size_of_message, buffer_msg_size, sizeof(uint32_t));
-  return size_of_message;
+  memcpy(size_of_message, buffer_msg_size, sizeof(uint32_t));
+  *size_of_message = ntohl(*size_of_message);
+  return 0;
 }
 
 /*
@@ -69,9 +117,8 @@ static uint32_t readSize(Socket_t *socket) {
 int sudokuClientStart(SudokuClient_t *self,
                       const char *host,
                       const char *port) {
-  self->socket = (Socket_t *) malloc(sizeof(Socket_t));
-  socketCreate(self->socket);
-  if (socketConnect(self->socket, host, port) == 1) {
+  socketCreate(&self->socket);
+  if (socketConnect(&self->socket, host, port) == 1) {
     printf("Uso: ./tp client %s %s\n", host, port);
     return 1;
   }
@@ -86,22 +133,16 @@ int sudokuClientStart(SudokuClient_t *self,
  *          Lo que devuelva recv
  */
 int sudokuClientPlay(SudokuClient_t *self) {
-  int res = 0;
-  char command[5] = {0};
-  if (getCommandLoop(command)) {
+  if (__sendCommandLoop(self)) {
     return 1;
   }
-  res = socketSend(self->socket, command, 5);
-  if (res != 0) {
+  uint32_t msg_size = 0;
+  int res = __readSize(&self->socket, &msg_size);
+  if (res == 1 || res == 2) {
     return res;
   }
-  uint32_t size_of_message = readSize(self->socket);
-  if (size_of_message == 1 || size_of_message == 2) {
-    return size_of_message;
-  }
-  uint32_t msg_size = ntohl(size_of_message);
   char *buffer_msg = malloc(sizeof(char) * (msg_size + 1));
-  res = socketReceive(self->socket, buffer_msg, msg_size);
+  res = socketReceive(&self->socket, buffer_msg, msg_size);
   if (res != 0) {
     free(buffer_msg);
     return res;
@@ -115,6 +156,5 @@ int sudokuClientPlay(SudokuClient_t *self) {
  * Libera los recursos del cliente
  */
 void sudokuClientStop(SudokuClient_t *self) {
-  socketDestroy(self->socket);
-  free(self->socket);
+  socketDestroy(&self->socket);
 }

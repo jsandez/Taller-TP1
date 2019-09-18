@@ -79,7 +79,7 @@ int socketListen(Socket_t *self, int waiting_clients) {
 int socketAccept(Socket_t *self, Socket_t *accept_socket) {
   int newFD = accept(self->fd, NULL, NULL);
   if (newFD == -1) {
-    close(self->fd);
+    socketDestroy(self);
     return 1;
   }
   int val = 1;
@@ -135,7 +135,8 @@ int socketReceive(Socket_t *self, char *buf, int length) {
 }
 
 void socketDestroy(Socket_t *self) {
-  close(self->fd);
-  close(self->fd);
+  if (self->fd != -1) {
+    close(self->fd);
+  }
 }
 

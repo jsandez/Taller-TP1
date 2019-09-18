@@ -4,12 +4,11 @@
 #include "Sudoku.h"
 
 typedef struct {
-  uint32_t size_int;
-  char *size;
+  uint32_t size;
   char *message;
 } Response_t;
 
-void responseCreate(Response_t *self, char *message, Sudoku_t *sudoku);
+void responseCreate(Response_t *self, char command, char *params, Sudoku_t *sudoku);
 void responseDestroy(Response_t *self);
 
 #endif

@@ -1,59 +1,33 @@
-#include <netinet/in.h>
 #include <stdlib.h>
 #include <string.h>
 #include "ServerResponse.h"
 
-static void getBoardView(Response_t *self, Sudoku_t *sudoku) {
+static void __getBoardView(Response_t *self, Sudoku_t *sudoku) {
   self->message = (char *) malloc(722);
+  self->size = 722;
   sudokuGet(sudoku, self->message);
-  self->size_int = 722;
-  uint32_t sizeForChar = htonl(self->size_int);
-  memcpy(self->size, &sizeForChar, 4);
 }
 
-static void getSudokuMessage(Response_t *self, const char *message) {
-  size_t length = strlen(message);
-  self->message = (char *) malloc(sizeof(char) * length);
-  self->size_int = length;
-  uint32_t sizeForChar = htonl(self->size_int);
-  memcpy(self->size, &sizeForChar, 4);
-  memcpy(self->message, message, length);
+static void __getSudokuMessage(Response_t *self, const char *message) {
+  self->message = (char *) malloc(sizeof(char) * strlen(message));
+  self->size = strlen(message);
+  memcpy(self->message, message, strlen(message));
 }
 
-static void evaluatePutParameters(Response_t *self,
-                                  char *message,
+static void __evaluatePutParameters(Response_t *self,
+                                  char *params,
                                   Sudoku_t *sudoku) {
-  uint8_t row = message[1] - '0';
-  uint8_t column = message[2] - '0';
-  uint8_t value = message[3] - '0';
+  uint8_t row = params[0] - '0';
+  uint8_t column = params[1] - '0';
+  uint8_t value = params[2] - '0';
   const char *messagePut = sudokuPut(sudoku,
                                      (int) value,
                                      (int) row,
                                      (int) column);
   if (strcmp(messagePut, "OK\n") == 0) {
-    getBoardView(self, sudoku);
+    __getBoardView(self, sudoku);
   } else {
-    getSudokuMessage(self, messagePut);
-  }
-}
-
-/*
- * Funcion que setea el tamanio del response, luego setea el mensaje que debe enviarse desde el sudoku
- */
-static void setParameters(Response_t *self, char *message, Sudoku_t *sudoku) {
-  if (message[0] == 'G') {
-    getBoardView(self, sudoku);
-  }
-  if (message[0] == 'P') {
-    evaluatePutParameters(self, message, sudoku);
-  }
-  if (message[0] == 'V') {
-    const char *messageVerify = sudokuVerify(sudoku);
-    getSudokuMessage(self, messageVerify);
-  }
-  if (message[0] == 'R') {
-    sudokuReset(sudoku);
-    getBoardView(self, sudoku);
+    __getSudokuMessage(self, messagePut);
   }
 }
 
@@ -62,16 +36,27 @@ static void setParameters(Response_t *self, char *message, Sudoku_t *sudoku) {
  *  - Tamanio del mensaje en un char de 5 bytes
  *  - Mensaje en un char del tamanio especificado por el campo size_int
  */
-void responseCreate(Response_t *self, char *message, Sudoku_t *sudoku) {
-  self->size = (char *) malloc(sizeof(char) * 4);
-  setParameters(self, message, sudoku);
+void responseCreate(Response_t *self, char command, char *params, Sudoku_t *sudoku) {
+  if (command == 'G') {
+    __getBoardView(self, sudoku);
+  }
+  if (command == 'P') {
+    __evaluatePutParameters(self, params, sudoku);
+  }
+  if (command == 'V') {
+    const char *messageVerify = sudokuVerify(sudoku);
+    __getSudokuMessage(self, messageVerify);
+  }
+  if (command == 'R') {
+    sudokuReset(sudoku);
+    __getBoardView(self, sudoku);
+  }
 }
 
 /*
  * Libera los recursos usados por el response
  */
 void responseDestroy(Response_t *self) {
-  free(self->size);
   free(self->message);
 }
 

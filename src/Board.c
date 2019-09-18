@@ -46,7 +46,6 @@ static void checkFile(FILE *f_source) {
 }
 
 void boardCreate(Board_t *self, const char *filepath) {
-  self->board_copy = (Board_t *) malloc(sizeof(Board_t));
   FILE *fsource = fopen(filepath, "r");
   char ch;
   checkFile(fsource);
@@ -65,7 +64,6 @@ void boardCreate(Board_t *self, const char *filepath) {
       }
     }
   }
-  *(self->board_copy) = *(self);
   fclose(fsource);
 }
 
@@ -78,9 +76,14 @@ int boardPut(Board_t *self, uint8_t value, uint8_t row, uint8_t column) {
 }
 
 void boardReset(Board_t *self) {
-  *self = *(self->board_copy);
+  for (int i = 0; i < 9; i++) {
+    for (int j = 0; j < 9; j++) {
+      if (!(self->cells[i][j].preFixed)) {
+        self->cells[i][j].value = 0;
+      }
+    }
+  }
+
 }
 
-void boardDestroy(Board_t *self) {
-  free(self->board_copy);
-}
+void boardDestroy(Board_t *self) {}

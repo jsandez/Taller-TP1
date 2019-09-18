@@ -10,3 +10,4 @@ cmake_install*
 CMake*
 *.py
 filter_options
+*.asta

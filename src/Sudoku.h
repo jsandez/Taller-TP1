@@ -3,7 +3,7 @@
 #include "Board.h"
 
 typedef struct {
-  Board_t *board;
+  Board_t board;
 } Sudoku_t;
 
 void sudokuStart(Sudoku_t *self);

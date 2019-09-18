@@ -5,9 +5,8 @@
 #include "SudokuClient.h"
 
 static int serverLoop(const char *port) {
-  int res = 0;
   SudokuServer_t sudoku_server;
-  res = sudokuServerStart(&sudoku_server, port);
+  int res = sudokuServerStart(&sudoku_server, port);
   while (res == 0) {
     res = sudokuServerAlive(&sudoku_server);
   }
@@ -16,9 +15,8 @@ static int serverLoop(const char *port) {
 }
 
 static int clientLoop(const char *host, const char *port) {
-  int res = 0;
   SudokuClient_t sudoku_client;
-  res = sudokuClientStart(&sudoku_client, host, port);
+  int res = sudokuClientStart(&sudoku_client, host, port);
   while (!res) {
     res = sudokuClientPlay(&sudoku_client);
   }
@@ -27,17 +25,17 @@ static int clientLoop(const char *host, const char *port) {
 }
 
 int main(int argc, char *argv[]) {
-  char mode[20];
   int res = 0;
-  memcpy(mode, argv[1], strlen(argv[1]) + 1);
-  if (strcmp(mode, "server") == 0) {
+  if (argc == 1) {
+    printf("ERROR: No hay argumentos\n");
+    return 1;
+  }
+  if (strncmp(argv[1], "server", 6) == 0) {
     const char *port = argv[2];
     res = serverLoop(port);
   } else {
-    if (strcmp(mode, "client") == 0) {
-      const char *host = argv[2];
-      const char *port = argv[3];
-      res = clientLoop(host, port);
+    if (strncmp(argv[1], "client", 6) == 0) {
+      res = clientLoop(argv[2], argv[3]);
     } else {
       printf("Modo no soportado, "
              "el primer parámetro debe ser server o client\n");
