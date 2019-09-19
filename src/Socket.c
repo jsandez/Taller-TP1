@@ -13,10 +13,10 @@
  * uso una funcion privada en la cual solo cambiare los parametros
  * de entrada.
  */
-static int socket_getaddrinfo(struct addrinfo **ai_list,
-                              const char *host,
-                              const char *service,
-                              int flags) {
+static int __socket_getaddrinfo(struct addrinfo **ai_list,
+                                const char *host,
+                                const char *service,
+                                int flags) {
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_family = AF_INET;
@@ -32,7 +32,7 @@ void socketCreate(Socket_t *self) {
 
 int socketConnect(Socket_t *self, const char *host, const char *service) {
   struct addrinfo *ai_list, *ptr;
-  if (socket_getaddrinfo(&ai_list, host, service, 0) != 0) {
+  if (__socket_getaddrinfo(&ai_list, host, service, 0) != 0) {
     return 1;
   }
   bool connected = false;
@@ -51,7 +51,7 @@ int socketConnect(Socket_t *self, const char *host, const char *service) {
 
 int socketBind(Socket_t *self, const char *service) {
   struct addrinfo *ai_list, *ptr;
-  if (socket_getaddrinfo(&ai_list, NULL, service, 0) != 0) {
+  if (__socket_getaddrinfo(&ai_list, NULL, service, 0) != 0) {
     return 1;
   }
   bool is_bind = false;

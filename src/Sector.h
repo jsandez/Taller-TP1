@@ -3,6 +3,12 @@
 #include <stdint.h>
 #include "Board.h"
 
+/*
+ * TDA que solo sirve para representar
+ * un mini-tablero de 3x3 que luego sera
+ * utilizado para chequear si contiene
+ * valores repetidos.
+ */
 typedef struct {
   Cell_t cells[3][3];
 } Sector_t;

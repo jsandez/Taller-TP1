@@ -3,6 +3,10 @@
 #include "Socket.h"
 #include "Sudoku.h"
 
+/*
+ * TDA que representa el juego del
+ * sudoku, visto desde el lado del servidor.
+ */
 typedef struct {
   Socket_t socket;
   Socket_t accept_socket;

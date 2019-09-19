@@ -2,18 +2,33 @@
 #include <string.h>
 #include "ServerResponse.h"
 
+/*
+ * Arma la representacion del sudoku, obteniendola
+ * cuando ejecuta un comando get.
+ */
 static void __getBoardView(Response_t *self, Sudoku_t *sudoku) {
   self->message = (char *) malloc(722);
   self->size = 722;
   sudokuGet(sudoku, self->message);
 }
 
+/*
+ * Clase que configura el tamanio y el mensaje
+ * del response, dependiendo de un mensaje
+ * pasado por parametro.
+ */
 static void __getSudokuMessage(Response_t *self, const char *message) {
   self->message = (char *) malloc(sizeof(char) * strlen(message));
   self->size = strlen(message);
   memcpy(self->message, message, strlen(message));
 }
 
+/*
+ * Funcion auxiliar que chequea los parametros
+ * en el caso de que la funcion sea put, para luego
+ * realizar la operacion correspondiente en
+ * el sudoku.
+ */
 static void __evaluatePutParameters(Response_t *self,
                                   char *params,
                                   Sudoku_t *sudoku) {
@@ -31,12 +46,10 @@ static void __evaluatePutParameters(Response_t *self,
   }
 }
 
-/*
- * Crea un response para mandar hacia el cliente, el cual contiene:
- *  - Tamanio del mensaje en un char de 5 bytes
- *  - Mensaje en un char del tamanio especificado por el campo size_int
- */
-void responseCreate(Response_t *self, char command, char *params, Sudoku_t *sudoku) {
+void responseCreate(Response_t *self,
+                    char command,
+                    char *params,
+                    Sudoku_t *sudoku) {
   if (command == 'G') {
     __getBoardView(self, sudoku);
   }
@@ -53,9 +66,6 @@ void responseCreate(Response_t *self, char command, char *params, Sudoku_t *sudo
   }
 }
 
-/*
- * Libera los recursos usados por el response
- */
 void responseDestroy(Response_t *self) {
   free(self->message);
 }

@@ -1,9 +1,11 @@
 #include <string.h>
 #include <stdio.h>
-#include "SudokuView.h"
 #include "SudokuServer.h"
 #include "SudokuClient.h"
 
+/*
+ * Ciclo de vida del server.
+ */
 static int serverLoop(const char *port) {
   SudokuServer_t sudoku_server;
   int res = sudokuServerStart(&sudoku_server, port);
@@ -14,6 +16,9 @@ static int serverLoop(const char *port) {
   return res;
 }
 
+/*
+ * Ciclo de vida del cliente.
+ */
 static int clientLoop(const char *host, const char *port) {
   SudokuClient_t sudoku_client;
   int res = sudokuClientStart(&sudoku_client, host, port);
@@ -24,6 +29,11 @@ static int clientLoop(const char *host, const char *port) {
   return res;
 }
 
+/*
+ * Funcion principal que realiza los
+ * ciclos de vida, dependiendo si es
+ * servidor o cliente.
+ */
 int main(int argc, char *argv[]) {
   int res = 0;
   if (argc == 1) {

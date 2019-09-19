@@ -5,6 +5,10 @@
 #include "SudokuClient.h"
 #include "Socket.h"
 
+/*
+ * Funcion auxiliar que evalua los parametros
+ * del comando put.
+ */
 static int __evaluatePut(SudokuClient_t *self, const char *stdIn) {
   int row,column,value;
   int res = sscanf(stdIn, "put %i in %i,%i", &value, &row, &column);
@@ -76,7 +80,8 @@ static int __getInput(SudokuClient_t *self) {
 /*
  * Loop que verifica los comandos que ingresa el cliente.
  * Status: 0: comando correcto
- *         1: se cerro el juego con exit, EOF, o nos cerraron la conexion
+ *         1: se cerro el juego con exit, EOF,
+ *         o nos cerraron la conexion
  */
 static int __sendCommandLoop(SudokuClient_t *self) {
   int command_result = __getInput(self);
@@ -109,11 +114,6 @@ static int __readSize(Socket_t *socket, uint32_t *size_of_message) {
   return 0;
 }
 
-/*
- * Inicia el cliente conectandose a un host y puerto especificado.
- * Return: 0 si se conecto bien
- *         1 si no pudo conectarse
- */
 int sudokuClientStart(SudokuClient_t *self,
                       const char *host,
                       const char *port) {
@@ -125,13 +125,6 @@ int sudokuClientStart(SudokuClient_t *self,
   return 0;
 }
 
-/*
- * Ciclo de vida de juego del sudoku, del lado del cliente
- * Retorna: 0 si se debe seguir jugando
- *          1 si se quiere cerrar el juego
- *          Lo que devuelva send
- *          Lo que devuelva recv
- */
 int sudokuClientPlay(SudokuClient_t *self) {
   if (__sendCommandLoop(self)) {
     return 1;
@@ -152,9 +145,6 @@ int sudokuClientPlay(SudokuClient_t *self) {
   return 0;
 }
 
-/*
- * Libera los recursos del cliente
- */
 void sudokuClientStop(SudokuClient_t *self) {
   socketDestroy(&self->socket);
 }
