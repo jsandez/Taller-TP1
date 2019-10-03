@@ -5,6 +5,9 @@
 #include "ServerResponse.h"
 
 int sudokuServerStart(SudokuServer_t *self, const char *port) {
+  if (sudokuStart(&self->sudoku) != 0) {
+    return 1;
+  }
   socketCreate(&self->socket);
   if (socketBind(&self->socket, port) == 1) {
     printf("Uso: ./tp server %s\n", port);
@@ -18,7 +21,6 @@ int sudokuServerStart(SudokuServer_t *self, const char *port) {
     printf("[ERROR] sudokuServerStart: ERROR EN ACCEPT");
     return 1;
   }
-  sudokuStart(&self->sudoku);
   return 0;
 }
 
@@ -31,7 +33,7 @@ int sudokuServerAlive(SudokuServer_t *self) {
     return 2;
   }
   if (command == 'P') {
-    if (socketReceive(&self->accept_socket, &params[0], 3) == 2) {
+    if (socketReceive(&self->accept_socket, params, 3) == 2) {
       return 2;
     }
   }

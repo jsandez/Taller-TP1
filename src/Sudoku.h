@@ -16,7 +16,7 @@ typedef struct {
  * Crea el board correspondiente al archivo
  * board.txt.
  */
-void sudokuStart(Sudoku_t *self);
+int sudokuStart(Sudoku_t *self);
 
 /*
  * Ingresa un valor en el tablero, siempre y
@@ -42,7 +42,7 @@ void sudokuReset(Sudoku_t *self);
  * Obtiene una representacion del sudoku la cual
  * la guarda en el string pasado por parametro.
  */
-void sudokuGet(Sudoku_t *self, char view[722]);
+void sudokuGet(Sudoku_t *self, char **view);
 
 /*
  * Libera los recursos del juego.

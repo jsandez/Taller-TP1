@@ -7,9 +7,8 @@
  * cuando ejecuta un comando get.
  */
 static void __getBoardView(Response_t *self, Sudoku_t *sudoku) {
-  self->message = (char *) malloc(722);
   self->size = 722;
-  sudokuGet(sudoku, self->message);
+  sudokuGet(sudoku, &self->message);
 }
 
 /*

@@ -23,7 +23,7 @@ typedef struct Board {
  * Recibe un puntero al tda y un nombre de archivo.
  * Crea el tablero con los datos que lee del archivo.
  */
-void boardCreate(Board_t *self, const char *filepath);
+int boardCreate(Board_t *self, const char *filepath);
 
 /*
  * Inserta un valor en el tablero.
@@ -36,7 +36,7 @@ int boardPut(Board_t *self, uint8_t value, uint8_t row, uint8_t column);
 /*
  * Obtiene una vista del estado del tablero.
  */
-void boardGet(Board_t *self,char *view);
+void boardGet(Board_t *self,char **view);
 
 /*
  * Resetea los valores a los que se habian

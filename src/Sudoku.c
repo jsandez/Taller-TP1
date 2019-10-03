@@ -75,8 +75,8 @@ static int __checkAllRows(Board_t *board) {
   return 0;
 }
 
-void sudokuStart(Sudoku_t *self) {
-  boardCreate(&self->board, "board.txt");
+int sudokuStart(Sudoku_t *self) {
+  return boardCreate(&self->board, "board.txt");
 }
 
 const char *sudokuPut(Sudoku_t *self,
@@ -104,7 +104,7 @@ void sudokuReset(Sudoku_t *self) {
   boardReset(&self->board);
 }
 
-void sudokuGet(Sudoku_t *self, char view[722]) {
+void sudokuGet(Sudoku_t *self, char **view) {
   boardGet(&self->board, view);
 }
 

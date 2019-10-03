@@ -3,12 +3,34 @@
 #include "SudokuServer.h"
 #include "SudokuClient.h"
 
+static int __checkArguments(int argc, char **argv) {
+  if (argc < 2) {
+    printf("ERROR: Argumentos insuficientes\n");
+    return 1;
+  }
+  if (strncmp(argv[1], "server", 6) == 0) {
+    if (argc != 3) {
+      printf("ERROR: Argumentos para server invalidos\n");
+      return 1;
+    }
+  }
+  if (strncmp(argv[1], "client", 6) == 0) {
+    if (argc != 4) {
+      printf("ERROR: Argumentos para cliente invalidos\n");
+      return 1;
+    }
+  }
+  return 0;
+}
 /*
  * Ciclo de vida del server.
  */
 static int serverLoop(const char *port) {
   SudokuServer_t sudoku_server;
-  int res = sudokuServerStart(&sudoku_server, port);
+  if (sudokuServerStart(&sudoku_server, port) != 0) {
+    return 1;
+  }
+  int res = 0;
   while (res == 0) {
     res = sudokuServerAlive(&sudoku_server);
   }
@@ -36,13 +58,15 @@ static int clientLoop(const char *host, const char *port) {
  */
 int main(int argc, char *argv[]) {
   int res = 0;
-  if (argc == 1) {
-    printf("ERROR: No hay argumentos\n");
+  if (__checkArguments(argc, argv) != 0) {
     return 1;
   }
   if (strncmp(argv[1], "server", 6) == 0) {
     const char *port = argv[2];
-    res = serverLoop(port);
+    if (serverLoop(port) == 1) {
+      return 1;
+    }
+
   } else {
     if (strncmp(argv[1], "client", 6) == 0) {
       res = clientLoop(argv[2], argv[3]);

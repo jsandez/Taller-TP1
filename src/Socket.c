@@ -38,12 +38,14 @@ int socketConnect(Socket_t *self, const char *host, const char *service) {
   bool connected = false;
   for (ptr = ai_list; ptr != NULL && !connected; ptr = ai_list->ai_next) {
     self->fd = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-    if (connect(self->fd, ptr->ai_addr, ptr->ai_addrlen) == -1) {
-      close(self->fd);
-      freeaddrinfo(ai_list);
-      return 1;
+    if (connect(self->fd, ptr->ai_addr, ptr->ai_addrlen) != -1) {
+      connected = true;
     }
-    connected = true;
+  }
+  if (!connected){
+    close(self->fd);
+    freeaddrinfo(ai_list);
+    return 1;
   }
   freeaddrinfo(ai_list);
   return 0;
@@ -57,12 +59,14 @@ int socketBind(Socket_t *self, const char *service) {
   bool is_bind = false;
   for (ptr = ai_list; ptr != NULL && !is_bind; ptr = ai_list->ai_next) {
     self->fd = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-    if (bind(self->fd, ptr->ai_addr, ptr->ai_addrlen) == -1) {
-      close(self->fd);
-      freeaddrinfo(ai_list);
-      return 1;
+    if (bind(self->fd, ptr->ai_addr, ptr->ai_addrlen) != -1) {
+      is_bind = true;
     }
-    is_bind = true;
+  }
+  if (!is_bind) {
+    close(self->fd);
+    freeaddrinfo(ai_list);
+    return 1;
   }
   freeaddrinfo(ai_list);
   return 0;
@@ -70,7 +74,7 @@ int socketBind(Socket_t *self, const char *service) {
 
 int socketListen(Socket_t *self, int waiting_clients) {
   if (listen(self->fd, waiting_clients) == -1) {
-    close(self->fd);
+    socketDestroy(self);
     return 1;
   }
   return 0;

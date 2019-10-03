@@ -10,24 +10,24 @@
  * el tablero al usuario.
  */
 static char *__template_view = "U===========U===========U===========U\n"
-                          "U X | X | X U X | X | X U X | X | X U\n"
-                          "U---+---+---U---+---+---U---+---+---U\n"
-                          "U X | X | X U X | X | X U X | X | X U\n"
-                          "U---+---+---U---+---+---U---+---+---U\n"
-                          "U X | X | X U X | X | X U X | X | X U\n"
-                          "U===========U===========U===========U\n"
-                          "U X | X | X U X | X | X U X | X | X U\n"
-                          "U---+---+---U---+---+---U---+---+---U\n"
-                          "U X | X | X U X | X | X U X | X | X U\n"
-                          "U---+---+---U---+---+---U---+---+---U\n"
-                          "U X | X | X U X | X | X U X | X | X U\n"
-                          "U===========U===========U===========U\n"
-                          "U X | X | X U X | X | X U X | X | X U\n"
-                          "U---+---+---U---+---+---U---+---+---U\n"
-                          "U X | X | X U X | X | X U X | X | X U\n"
-                          "U---+---+---U---+---+---U---+---+---U\n"
-                          "U X | X | X U X | X | X U X | X | X U\n"
-                          "U===========U===========U===========U\n";
+                               "U X | X | X U X | X | X U X | X | X U\n"
+                               "U---+---+---U---+---+---U---+---+---U\n"
+                               "U X | X | X U X | X | X U X | X | X U\n"
+                               "U---+---+---U---+---+---U---+---+---U\n"
+                               "U X | X | X U X | X | X U X | X | X U\n"
+                               "U===========U===========U===========U\n"
+                               "U X | X | X U X | X | X U X | X | X U\n"
+                               "U---+---+---U---+---+---U---+---+---U\n"
+                               "U X | X | X U X | X | X U X | X | X U\n"
+                               "U---+---+---U---+---+---U---+---+---U\n"
+                               "U X | X | X U X | X | X U X | X | X U\n"
+                               "U===========U===========U===========U\n"
+                               "U X | X | X U X | X | X U X | X | X U\n"
+                               "U---+---+---U---+---+---U---+---+---U\n"
+                               "U X | X | X U X | X | X U X | X | X U\n"
+                               "U---+---+---U---+---+---U---+---+---U\n"
+                               "U X | X | X U X | X | X U X | X | X U\n"
+                               "U===========U===========U===========U\n";
 
 /*
  * Funcion auxiliar que chequea la cantidad
@@ -39,12 +39,12 @@ static int __checkColumns(const char *linea) {
   if (linea[17] != '\n') {
     printf("%c\n", linea[17]);
     printf("WRONG SIZE OF COLUMN");
-    exit(2);
+    return 1;
   }
   for (int i = 0; i < 9; i += 2) {
     if (!isdigit(linea[i])) {
       printf("NOT ALL DIGITS ERROR");
-      exit(3);
+      return 1;
     }
   }
   return 0;
@@ -61,15 +61,17 @@ static int __checkRows(FILE *f_source) {
   int amount_of_rows = 0;
   while (fgets(linea, sizeof(linea), f_source) != NULL) {
     amount_of_rows++;
-    __checkColumns(linea);
+    if (__checkColumns(linea) != 0) {
+      return 1;
+    }
     if (amount_of_rows > 9) {
       printf("MORE THAN 9 ROWS");
-      exit(4);
+      return 1;
     }
   }
   if (amount_of_rows < 9) {
     printf("LESS THAN 9 ROWS");
-    exit(5);
+    return 1;
   }
   return 0;
 }
@@ -79,18 +81,20 @@ static int __checkRows(FILE *f_source) {
  * correspondientes y tambien que el archivo
  * no sea NULL.
  */
-static void __checkFile(FILE *f_source) {
+static int __checkFile(FILE *f_source) {
   if (f_source == NULL) {
     printf("INPUT ERROR");
-    exit(1);
+    return 1;
   }
-  __checkRows(f_source);
+  return __checkRows(f_source);
 }
 
-void boardCreate(Board_t *self, const char *filepath) {
+int boardCreate(Board_t *self, const char *filepath) {
   FILE *fsource = fopen(filepath, "r");
   char ch;
-  __checkFile(fsource);
+  if (__checkFile(fsource) != 0) {
+    return 1;
+  }
   rewind(fsource);
   int row = 0, column = 0;
   while ((ch = fgetc(fsource)) != EOF) {
@@ -107,6 +111,7 @@ void boardCreate(Board_t *self, const char *filepath) {
     }
   }
   fclose(fsource);
+  return 0;
 }
 
 int boardPut(Board_t *self, uint8_t value, uint8_t row, uint8_t column) {
@@ -127,12 +132,13 @@ void boardReset(Board_t *self) {
   }
 }
 
-void boardGet(Board_t *self,char* view){
-  memcpy(view,__template_view,722);
+void boardGet(Board_t *self, char **view) {
+  *view = (char *) malloc(722);
+  memcpy(*view, __template_view, 722);
   char *pch;
   for (int i = 0; i < 9; i++) {
     for (int j = 0; j < 9; j++) {
-      pch = strchr(view, 'X');
+      pch = strchr(*view, 'X');
       uint8_t value = self->cells[i][j].value;
       if (value == 0) {
         *pch = ' ';
